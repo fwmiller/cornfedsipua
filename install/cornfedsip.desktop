@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Cornfed SIP User Agent
+GenericName=Softphone
+Comment=A SIP Softphone
+Exec=cornfedsip
+Icon=sip_logo_48.png
+Terminal=false
+Type=Application
+Categories=Application;Network;

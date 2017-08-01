@@ -1,0 +1,50 @@
+* Add default buttons settings to dialogs
+* Add call connect timer to GUI
+* Add encryption of passwords in config file
+* Visual feedback when dialing digits
+
+* Add handling of aggregated Authentications when outbound UAC INVITEs are
+  forked
+* Add handling of 503 Service Unavailable response
+* Add handling of 485 Ambiguous response
+* Add check for 305 Use Proxy redirect and retransmit request to
+  proxy specified in Contact header line
+* Add check for a non-empty body and no Content-Type header line
+* Add check for no body and Content-Length header line set to zero
+* Add check for Accept-Encoding header line in incoming requests
+* Add support for multiple encodings
+* Add check for Content-Encoding header line
+* Add check for use of addr-spec form of URIs if a comman, semicolon,
+  or question mark is present in a Contact header line URI
+* Add check for angle brackets for URIs in the Contact, To, or From
+  header lines if the URI contains a comma, question mark, or semicolon
+* Add parsing of URI parameters
+* Add check for @ sign with no user field in URIs
+* Add support for RFC 3263 (specifically Section 5)
+* Add support for multicast addresses and the maddr and ttl parameters
+  in the Via header
+* Add support for TCP transport of SIP messages
+* Add retransmission of most recent provisional response when a
+  retransmitted request is received
+* Add retransmission of ACKs when multiple final responses are received
+  along with Timer D expirations
+* Add check for overlaps in session description in received re-INVITEs
+* Add check for version identifiers if present in the SDP of a received
+  re-INVITE
+* Add retransmission of 180 Ringing every minute
+* Add support for initial offer in 200 OK and answer in ACK
+* Add copying of Timestamp to 100 Trying responses
+* Add support for content processing (RFC 3261 Section 8.2.3)
+* Add support for request merging (RFC 3261 Section 8.2.2.2)
+* Add 3xx response handling to the UAC
+* Add support for pre-existing route sets and convert outbound proxy
+  mechanism to be a special case of a pre-existing route set
+* Add support for non-lr route sets
+* Add support for stream oriented transport protocols
+* Add checks for and handling of Content-Type other than application/sdp
+* Add concatenation of multiple occurences of the same header line
+
+* Add ALSA-specific soundcard driver
+* Add support for registration queries
+* Add command to allow changing the soundcard input buffer high-water
+  mark value

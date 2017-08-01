@@ -1,0 +1,107 @@
+#include "gui.h"
+#include "log.h"
+
+#define MSGSIZE		128
+#define MSGS		16
+#define MSG_INTERVAL	700 /* milliseconds */
+
+static int initialized = 0;
+static pthread_t status_thread;
+static pthread_mutex_t status_thread_mutex = PTHREAD_MUTEX_INITIALIZER;
+static int idle = 1;
+static struct timeval last_msg;
+static char msgs[MSGS * MSGSIZE];
+static int msgcnt = 0;
+static int msgbufh = 0, msgbuft = 0;
+
+static void
+status_display(char *msg)
+{
+	gdk_threads_enter();
+	gtk_statusbar_push(GTK_STATUSBAR(status_bar),
+			   status_bar_context_id, msg);
+	gdk_threads_leave();
+}
+
+static void *
+status_thread_func(void *arg)
+{
+	struct timeval now, dur, end;
+	struct timezone tz;
+
+	for (;;) {
+		if (idle) {
+			usleep(1000 * MSG_INTERVAL);
+			continue;
+		}
+		gettimeofday(&now, &tz);
+
+		if (msgcnt == 0) {
+			dur.tv_sec = 10;
+			dur.tv_usec = 0;
+			timeradd(&last_msg, &dur, &end);
+			if (timercmp(&now, &end, >=)) {
+				status_display("Cornfed SIP User Agent");
+				idle = 1;
+			}
+			continue;
+		}
+		dur.tv_sec = 0;
+		dur.tv_usec = MSG_INTERVAL;
+		timeradd(&last_msg, &dur, &end);
+		if (timercmp(&now, &end, >=)) {
+			char s[MSGSIZE];
+
+			pthread_mutex_lock(&status_thread_mutex);
+
+			memset(s, 0, MSGSIZE);
+			strncpy(s, msgs + (msgbufh * MSGSIZE), MSGSIZE - 1);
+			msgcnt--;
+			msgbufh = (msgbufh + 1) % MSGS;
+
+			pthread_mutex_unlock(&status_thread_mutex);
+
+			status_display(s);
+
+			last_msg.tv_sec = now.tv_sec;
+			last_msg.tv_usec = now.tv_usec;
+		}
+	}
+}
+
+static void
+status_init()
+{
+	int result;
+
+	result = pthread_create(
+		&status_thread, NULL, status_thread_func, NULL);
+	if (result != 0) {
+		log_msg(LOG_ERROR, "Create status thread failed (%s)",
+			strerror(result));
+	}
+}
+
+void
+status(char *msg)
+{
+	if (!initialized) {
+		status_init();
+		initialized = 1;
+	}
+	if (idle) {
+		struct timezone tz;
+
+		gettimeofday(&last_msg, &tz);
+		idle = 0;
+		status_display(msg);
+	}
+	pthread_mutex_lock(&status_thread_mutex);
+
+	memset(msgs + (msgbuft * MSGSIZE), 0, MSGSIZE);
+	strncpy(msgs + (msgbuft * MSGSIZE), msg, MSGSIZE - 1);
+	msgcnt++;
+	msgbuft = (msgbuft + 1) % MSGS;
+
+	pthread_mutex_unlock(&status_thread_mutex);
+}

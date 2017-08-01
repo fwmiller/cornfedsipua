@@ -1,0 +1,19 @@
+#!/usr/bin/expect -f
+spawn /home/fwmiller/sip/cli/sip
+expect "sip>"
+send "reg user 17476239560\n"
+expect "sip>"
+send "reg passwd tired\n"
+expect "sip>"
+send "reg host proxy01.sipphone.com\n"
+expect "sip>"
+send "reg port 5060\n"
+expect "sip>"
+send "reg interval 60\n"
+expect "sip>"
+send "reg\n"
+expect "sip>"
+send "reg send\n"
+expect "Registration request sent"
+expect "Registration expires"
+exit

@@ -1,0 +1,44 @@
+
+END-USER SOFTWARE LICENSE AGREEMENT
+Cornfed SIP User Agent
+
+By downloading and either examining or executing the included binary
+program, you (the user) agree to the following terms of use.
+
+This software (Cornfed SIP User Agent) is provided for personal use only
+for non-commercial purposes.  The software can be used on any and all 
+computers owned by the user as long as it is for non-commercial purposes.
+
+The software may not be copied for distribution to any other persons or
+organization.  Other persons or organizations desiring to use the software
+must obtain it from Cornfed Systems.  Distribution for any purpose by any
+party other than Cornfed Systems requires explicit written approval of
+Cornfed Systems.
+
+The user may not make any modifications to the binary program.  The user
+agrees not to "reverse engineer" the binary program contained herein.
+Reverse engineering refers to any practice whose intent is to determine
+the way in which the implementation of the binary program has been
+accomplished.
+
+This program includes a web-based monitoring facility.  The client will
+log errors and warnings to the Cornfed Systems web server to assist us
+in debugging.  Cornfed Systems has made every effort to assure that
+no personal information of any kind, including but not limited to,
+domain names, IP addresses, user information, and passwords, is accessed
+or transmitted.  However, Cornfed Systems cannot be held liable for the
+transmission of any data deemed inappropriate in any way by you either
+purposefully or accidently.  Your use of this client gives Cornfed
+Systems consent to transmit debugging information.
+
+THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
+CORNFED SYSTEMS OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+

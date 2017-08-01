@@ -1,0 +1,2658 @@
+
+Cornfed SIP User Agent
+Version 0.4.7
+RFC 3261 COMPLIANCE 
+
+
+==============================================================================
+
+
+This document is a subset of RFC 3261 that includes the MUST and MUST NOT
+requirements relevant to a User Agent.  In addition, each of the MUST and
+MUST NOT requirements has been addressed as either FULLY COMPLY, PARTIAL
+COMPLY, or DO NOT COMPLY based on the current release.
+
+This document is intended for informational use only and no guarantee is
+made concerning its accuracy with respect to the implementation whatsoever.
+
+
+==============================================================================
+
+
+7 SIP Messages
+
+  The start-line, each message-header line, and the empty line MUST be
+  terminated by a carriage-return line-feed sequence (CRLF).  Note that the
+  empty line MUST be present even if the message-body is not.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generated messages all
+	terminate with CRLF.  The empty line is inserted whether or not
+	there is a message body.  The Cornfed SIP User Agent tolerates
+	lines in incoming messages that do not include the CR character.
+
+
+7.1 Requests
+
+  The Request-URI MUST NOT contain unescaped spaces or control characters
+  and MUST NOT be enclosed in "<>".
+
+
+	FULLY COMPLY: All Request-URIs generated in Cornfed SIP User
+	Agent request messages follow this convention.  The Cornfed SIP
+	User Agent tolerates incoming messages that enclose the
+	Request-URI with "<>" characters.
+
+
+  To be compliant with this specification, applications sending SIP
+  messages MUST include a SIP-Version of "SIP/2.0".
+
+
+	FULLY COMPLY: All Cornfed SIP User Agent generated messages use
+	"SIP/2.0" for their SIP-Version.  The Cornfed SIP User Agent does
+	not check incoming messages for their version number.
+
+
+  The SIP-Version string is case-insensitive, but implementations MUST send
+  upper-case.
+
+
+	FULLY COMPLY: All Cornfed SIP User Agent generated messages use
+	upper-case for the SIP-Version.  The Cornfed SIP User Agent does
+	not check incoming messages for their version number.
+
+
+7.3.1 Header Field Format
+
+  It MUST be possible to combine the multiple header field rows into one
+  "field-name: field-value" pair, without changing the semantics of the
+  message, by appending each subsequent field-value to the first, each
+  separated by a comma.
+
+  The exceptions to this rule are the WWW-Authenticate, Authorization,
+  Proxy-Authenticate, and Proxy-Authorization header fields.  Multiple header
+  field rows with these names MAY be present in a message, but since their
+  grammar does not follow the general form listed in Section 7.3, they MUST
+  NOT be combined into a single header field row.
+
+  Implementations MUST be able to process multiple header field rows with
+  the same name in any combination of the single-value-per-line or
+  comma-separated value forms.
+
+
+	PARTIAL COMPLY: In general, parsing of messages stops at the
+	first occurence of a header line and that occurence is treated
+	as the only instance of the header line.  The exceptions to this
+	are the Record-Route and Route header lines.
+
+
+  Even though an arbitrary number of parameter pairs may be attached to a
+  header field value, any given parameter-name MUST NOT appear more than
+  once.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent never produces a
+	parameter more than once on a given header line.  The Cornfed
+	SIP User Agent tolerates multiple occurences of a parameter
+	appearing in header lines of received messages.  The first
+	value will generally be used if the parameter is parsed.
+
+
+7.3.2 Header Field Classification
+
+  If a header field appears in a message not matching its category (such as
+  a request header field in a response), it MUST be ignored.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent only parses the headers
+	required to process a message.  If other headers appear that are
+	not necessary, they are all ignored.
+
+
+  Implementations MUST accept both the long and short forms of each header
+  name.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent accepts all the
+	compact header forms specified in RFC 3261 in received messages.
+	Compact header forms are not used for generated messages.
+
+
+  The Internet media type of the message body MUST be given by the
+  Content-Type header field.  If the body has undergone any encoding such
+  as compression, then this MUST be indicated by the Content-Encoding header
+  field; otherwise, Content-Encoding MUST be omitted.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always specifies the
+	message body type using the Content-Type header field if a body
+	is generated.  No encoding of the generated message body content
+	is done that requires a Content-Encoding header line.  Neither
+	the Content-Type or Content-Encoding header fields are checked
+	for incoming messages.  The body of the incoming message is
+	assumed to be unencoded of type application/sdp.
+
+
+  The "multipart" MIME type defined in RFC 2046 [11] MAY be used within the
+  body of the message.  Implementations that send requests containing
+  multipart message bodies MUST send a session description as a non-multipart
+  message body if the remote implementation requests this through an Accept
+  header field that does not contain multipart.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent never generates
+	messages that use "multipart" MIME bodies.  If a message with
+	a "multipart" MIME body is received, it will likely be parsed
+	incorrectly since bodies are assume to be of type application/sdp.
+
+
+7.3.4 Message Body Length
+
+  The "chunked" transfer encoding of HTTP/1.1 MUST NOT be used for SIP.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not generate
+	"chunked" encoding of HTTP/1.1.
+
+
+7.5 Framing SIP Messages
+
+  Implementations processing SIP messages over stream-oriented transports
+  MUST ignore any CRLF appearing before the start-line [H4.1].
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not currently
+	support the use of stream-oriented transports.
+
+
+8.1.1 Generating a Request
+
+  A valid SIP request formulated by a UAC MUST, at a minimum, contain the
+  following header fields: To, From, CSeq, Call-ID, Max-Forwards, and Via;
+  all of these header fields are mandatory in all SIP requests.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent includes these six
+	headers in every request if generates.
+
+
+8.1.1.1 Request-URI
+
+  When a pre-existing route set is present, the procedures for populating
+  the Request-URI and Route header field detailed in Section 12.2.1.1 MUST
+  be followed (even though there is no dialog), using the desired Request-URI
+  as the remote target URI.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent populates the
+	Request-URI and Route headers fields as specified in Section
+	12.2.1.1 except for the variations given under the requirements
+	for that section in this document.
+
+
+8.1.1.2 To
+
+  All SIP implementations MUST support the SIP URI scheme.  Any
+  implementation that supports TLS MUST support the SIPS URI scheme.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent supports the
+	SIP URI scheme but does not support the SIPS URI scheme
+	or TLS for transport.
+
+
+  A request outside of a dialog MUST NOT contain a To tag; the tag in the
+  To field of a request identifies the peer of the dialog.
+
+
+	FULLY COMPLY: No request generated outside a dialog by the
+	Cornfed SIP User Agent adds a tag to the To header field.
+
+
+8.1.1.3 From
+
+  The From field MUST contain a new "tag" parameter, chosen by the UAC.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent adds a tag to the
+	From header field of for UAC requests its choosing.
+
+
+8.1.1.4 Call-ID
+
+  The Call-ID header field acts as a unique identifier to group together
+  a series of messages.  It MUST be the same for all requests and responses
+  sent by either UA in a dialog.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent uses the same Call-ID
+	for all messages within a dialog.
+
+
+  In a new request created by a UAC outside of any dialog, the Call-ID
+  header field MUST be selected by the UAC as a globally unique identifier
+  over space and time unless overridden by method-specific behavior.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates a globally
+	unique Call-ID for new requests outside of a dialog.
+
+
+8.1.1.5 CSeq
+
+  The CSeq header field serves as a way to identify and order transactions.
+  It consists of a sequence number and a method.  The method MUST match that
+  of the request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always matches the
+	method of a request when sending a response.
+
+
+  The sequence number value MUST be expressible as a 32-bit unsigned
+  integer and MUST be less than 2**31.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent begins a sequence
+	number at one when a dialog is initiated and counts up until
+	the dialog is ended.  For incoming messages, the remote CSeq
+	number is obtained using the atoi() function.
+
+
+8.1.1.6 Max-Forwards
+
+  A UAC MUST insert a Max-Forwards header field into each request it
+  originates with a value that SHOULD be 70.
+
+
+	FULLY COMPLY: When relevant, the Cornfed SIP User Agent
+	inserts the Max-Forwards header line and sets the value to 70.
+
+
+8.1.1.7 Via
+
+  When the UAC creates a request, it MUST insert a Via into that request.
+  The protocol name and protocol version in the header field MUST be SIP
+  and 2.0, respectively.  The Via header field value MUST contain a branch
+  parameter.
+
+  The branch parameter value MUST be unique across space and time for all
+  requests sent by the UA.
+
+  The branch ID inserted by an element compliant with this specification
+  MUST always begin with the characters "z9hG4bK".
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always inserts a
+	Via header into messages it sends.  The protocol name and version
+	are always SIP and 2.0, respectively.  The Via header is always
+	given a branch parameter.  The branch parameter is generate at
+	the beginning of a dialog and used for all messages withing
+	the dialog.  The branch parameter always uses the specified
+	character prefix.
+
+
+8.1.1.8 Contact
+
+  The Contact header field provides a SIP or SIPS URI that can be used to
+  contact that specific instance of the UA for subsequent requests.  The
+  Contact header field MUST be present and contain exactly one SIP or SIPS
+  URI in any request that can result in the establishment of a dialog.
+  For the methods defined in this specification, that includes only the
+  INVITE request.  For these requests, the scope of the Contact is global.
+  That is, the Contact header field value contains the URI at which the UA
+  would like to receive requests, and this URI MUST be valid even if used
+  in subsequent requests outside of any dialogs.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always inserts a
+	Contact header into messages it sends and that header never
+	contains more than a single SIP URI.  The URI used in the
+	contact header corresponds to the User Agent user, host and
+	UDP port and should be valid beyond the scope of the dialog
+	in which it is used.
+
+
+  If the Request-URI or top Route header field value contains a SIPS URI,
+  the Contact header field MUST contain a SIPS URI as well.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent does not generate
+	SIPS URIs.  The Cornfed SIP User Agent will parse a SIPS URI
+	but does not check semantically whether URIs are SIP or SIPS.
+
+
+8.1.1.9 Supported and Require
+
+  The option tags listed MUST only refer to extensions defined in
+  standards-track RFCs.
+
+  If the UAC wishes to insist that a UAS understand an extension that the
+  UAC will apply to the request in order to process the request, it MUST
+  insert a Require header field into the request listing the option tag for
+  that extension.  If the UAC wishes to apply an extension to the request
+  and insist that any proxies that are traversed understand that extension,
+  it MUST insert a Proxy-Require header field into the request listing the
+  option tag for that extension.
+
+  As with the Supported header field, the option tags in the Require and
+  Proxy-Require header fields MUST only refer to extensions defined in
+  standards-track RFCs.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not use any
+	extensions that force the use of a Supported or Require header
+	in generated messages so these requirements are not applicable.
+	for the UAC.  The Cornfed SIP User Agent checks for the Require
+	header and since no extensions are currently supported, returns
+	a 420 Bad Extension response if present.
+
+
+8.1.2 Sending the Request
+
+  Unless there is local policy specifying otherwise, the destination MUST
+  be determined by applying the DNS procedures described in [4] as follows.
+  If the first element in the route set indicated a strict router (resulting
+  in forming the request as described in Section 12.2.1.1), the procedures
+  MUST be applied to the Request-URI of the request.  Otherwise, the
+  procedures are applied to the first Route header field value in the
+  request (if one exists), or to the request's Request-URI if there is no
+  Route header field present.  These procedures yield an ordered set of
+  address, port, and transports to attempt.  Independent of which URI is
+  used as input to the procedures of [4], if the Request-URI specifies a
+  SIPS resource, the UAC MUST follow the procedures of [4] as if the input
+  URI were a SIPS URI.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent does not support
+	strict source routing in the current release.  Future releases
+	will add support for strict source routing and it will include
+	the appropriate DNS usage as support for loose source routing
+	does now.
+
+
+  If the Request-URI contains a SIPS URI, any alternate destinations MUST
+  be contacted with TLS.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not currently
+	support the use of SIPS URIs.
+
+
+8.1.3.1 Transaction Layer Errors
+
+  In some cases, the response returned by the transaction layer will not
+  be a SIP message, but rather a transaction layer error.  When a timeout
+  error is received from the transaction layer, it MUST be treated as if
+  a 408 (Request Timeout) status code has been received.  If a fatal
+  transport error is reported by the transport layer (generally, due to
+  fatal ICMP errors in UDP or connection failures in TCP), the condition
+  MUST be treated as a 503 (Service Unavailable) status code.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent handles transaction
+	layer timeouts as specified.
+
+
+8.1.3.2 Unrecognized Responses
+
+  A UAC MUST treat any final response it does not recognize as being
+  equivalent to the x00 response code of that class, and MUST be able to
+  process the x00 response code for all classes.  For example, if a UAC
+  receives an unrecognized response code of 431, it can safely assume that
+  there was something wrong with its request and treat the response as if
+  it had received a 400 (Bad Request) response code.  A UAC MUST treat any
+  provisional response different than 100 that it does not recognize as
+  183 (Session Progress).  A UAC MUST be able to process 100 and 183
+  responses.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent handles unrecognized
+	response as if they belong to the X00 class response.  The UAC
+	treats unrecognized provisional responses as if they were 183
+	responses.  The UAC handles both 100 and 183 responses.
+
+
+8.1.3.4 Processing 3xx Responses
+
+  As with proxy recursion, a client processing 3xx class responses MUST
+  NOT add any given URI to the target set more than once.
+
+  In order to create a request based on a contact address in a 3xx
+  response, a UAC MUST copy the entire URI from the target set into the
+  Request-URI, except for the "method-param" and "header" URI parameters
+  (see Section 19.1.1 for a definition of these parameters).
+
+  Finally, once the new request has been constructed, it is sent using
+  a new client transaction, and therefore MUST have a new branch ID in
+  the top Via field as discussed in Section 8.1.1.7.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not handle 3xx
+	class responses in the current release.
+
+
+8.2 UAS Behavior
+
+  Note that request processing is atomic.  If a request is accepted, all
+  state changes associated with it MUST be performed.  If it is rejected,
+  all state changes MUST NOT be performed.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent is atomic with respect
+	to UAS requests.
+
+
+8.2.1 Method Inspection
+
+  Once a request is authenticated (or authentication is skipped), the UAS
+  MUST inspect the method of the request.  If the UAS recognizes but does
+  not support the method of a request, it MUST generate a 405 (Method Not
+  Allowed) response.  Procedures for generating responses are described in
+  Section 8.2.6.  The UAS MUST also add an Allow header field to the 405
+  (Method Not Allowed) response.  The Allow header field MUST list the set
+  of methods supported by the UAS generating the message.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates 405 Method
+	Not Allowed responses for unsupported request methods.
+
+
+8.2.2 Header Inspection
+
+  If a UAS does not understand a header field in a request (that is, the
+  header field is not defined in this specification or in any supported
+  extension), the server MUST ignore that header field and continue
+  processing the message.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent ignores header lines
+	it does not recognize.
+
+
+8.2.2.2 Merged Requests
+
+  If the request has no tag in the To header field, the UAS core MUST
+  check the request against ongoing transactions.  If the From tag,
+  Call-ID, and CSeq exactly match those associated with an ongoing
+  transaction, but the request does not match that transaction (based on
+  the matching rules in Section 17.2.3), the UAS core SHOULD generate a
+  482 (Loop Detected) response and pass it to the server transaction.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not perform
+	this check or generate this response in the current release.
+
+
+8.2.2.3 Require
+
+  If a UAS does not understand an option-tag listed in a Require header
+  field, it MUST respond by generating a response with status code 420
+  (Bad Extension).  The UAS MUST add an Unsupported header field, and list
+  in it those options it does not understand amongst those in the Require
+  header field of the request.  Note that Require and Proxy-Require MUST
+  NOT be used in a SIP CANCEL request, or in an ACK request sent for a
+  non-2xx response.
+
+  An ACK request for a 2xx response MUST contain only those Require and
+  Proxy-Require values that were present in the initial request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent checks for the
+	Require header and if present, sends a 420 Bad Extension
+	response since no extensions are currently supported.
+
+
+8.2.3 Content Processing
+
+  If there are any bodies whose type (indicated by the Content-Type),
+  language (indicated by the Content-Language) or encoding (indicated by
+  the Content-Encoding) are not understood, and that body part is not
+  optional (as indicated by the Content-Disposition header field), the
+  UAS MUST reject the request with a 415 (Unsupported Media Type) response.
+  The response MUST contain an Accept header field listing the types of
+  all bodies it understands, in the event the request contained bodies of
+  types not supported by the UAS.  If the request contained content
+  encodings not understood by the UAS, the response MUST contain an
+  Accept-Encoding header field listing the encodings understood by the
+  UAS.  If the request contained content with languages not understood by
+  the UAS, the response MUST contain an Accept-Language header field
+  indicating the languages understood by the UAS.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent checks for the
+	Content-Type header and returns a 415 Unsupported Media Type
+	under some circumstances.
+
+
+8.2.4 Applying Extensions
+
+  A UAS that wishes to apply some extension when generating the response
+  MUST NOT do so unless support for that extension is indicated in the
+  Supported header field in the request.
+
+  The needed extension(s) MUST be included in a Require header field in the
+  response.
+
+  Any extensions applied to a non-421 response MUST be listed in a Require
+  header field included in the response.  Of course, the server MUST NOT
+  apply extensions not listed in the Supported header field in the request. 
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent UAS does not use any
+	extensions in its responses.
+
+
+8.2.6.1 Sending a Provisional Response
+
+  When a 100 (Trying) response is generated, any Timestamp header field
+  present in the request MUST be copied into this 100 (Trying) response.
+  If there is a delay in generating the response, the UAS SHOULD add a
+  delay value into the Timestamp value in the response.  This value MUST
+  contain the difference between the time of sending of the response and
+  receipt of the request, measured in seconds.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent UAS never inserts
+	a Timestamp header into a 100 Trying response in the current
+	release.
+
+
+8.2.6.2 Headers and Tags
+
+  The From field of the response MUST equal the From header field of the
+  request.  The Call-ID header field of the response MUST equal the Call-ID
+  header field of the request.  The CSeq header field of the response MUST
+  equal the CSeq field of the request.  The Via header field values in the
+  response MUST equal the Via header field values in the request and MUST
+  maintain the same ordering.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent preserves all the
+	equalties and ordering specified here.
+
+
+  If a request contained a To tag in the request, the To header field in
+  the response MUST equal that of the request.  However, if the To header
+  field in the request did not contain a tag, the URI in the To header
+  field in the response MUST equal the URI in the To header field;
+  additionally, the UAS MUST add a tag to the To header field in the
+  response (with the exception of the 100 (Trying) response, in which a
+  tag MAY be present).  This serves to identify the UAS that is responding,
+  possibly resulting in a component of a dialog ID.  The same tag MUST be
+  used for all responses to that request, both final and provisional (again
+  excepting the 100 (Trying)).
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent preserves equality
+	when a To tag is present and generates a To tag as specified
+	for responses when the To tag is missing from the request.
+
+
+8.2.7 Stateless UAS Behavior
+
+  The most important behaviors of a stateless UAS are the following:
+
+    o  A stateless UAS MUST NOT send provisional (1xx) responses.
+
+    o  A stateless UAS MUST NOT retransmit responses.
+
+    o  A stateless UAS MUST ignore ACK requests.
+
+    o  A stateless UAS MUST ignore CANCEL requests.
+
+    o  To header tags MUST be generated for responses in a stateless
+       manner - in a manner that will generate the same tag for the same
+       request consistently.  For information on tag construction see
+       Section 19.3.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent is not stateless
+	and these requirements are not applicable.
+
+
+9.1 Client Behavior (Canceling a Request)
+
+  The following procedures are used to construct a CANCEL request.  The
+  Request-URI, Call-ID, To, the numeric part of CSeq, and From header
+  fields in the CANCEL request MUST be identical to those in the request
+  being cancelled, including tags.  A CANCEL constructed by a client MUST
+  have only a single Via header field value matching the top Via value in
+  the request being cancelled.  Using the same values for these header
+  fields allows the CANCEL to be matched with the request it cancels
+  (Section 9.2 indicates how such matching occurs).  However, the method
+  part of the CSeq header field MUST have a value of CANCEL.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent follows this
+	construction exactly.
+
+
+  If the request being cancelled contains a Route header field, the CANCEL
+  request MUST include that Route header field's values.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent only allows CANCELing
+	of INVITEs according to the standard.  Both the INVITE and CANCEL
+	use the same procedure to build their messages, including the
+	inclusion of Route header lines.
+
+
+  The CANCEL request MUST NOT contain any Require or Proxy-Require header
+  fields.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not include
+	Require or Proxy-Require header lines in UAC CANCEL messages.
+
+
+  If no provisional response has been received, the CANCEL request MUST NOT
+  be sent; rather, the client MUST wait for the arrival of a provisional
+  response before sending the request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not send a CANCEL
+	if no provisional response has been received.
+
+
+  The destination address, port, and transport for the CANCEL MUST be
+  identical to those used to send the original request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent send the CANCEL to
+	the same address and port using UDP as the INVITE request.
+
+
+10.2 Constructing the REGISTER Request
+
+  The Record-Route header field has no meaning in REGISTER requests or
+  responses, and MUST be ignored if present.  In particular, the UAC MUST
+  NOT create a new route set based on the presence or absence of a
+  Record-Route header field in any response to a REGISTER request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent ignores any
+	Record-Route headers in responses to REGISTER requests.
+
+
+  The following header fields, except Contact, MUST be included in a
+  REGISTER request.  A Contact header field MAY be included:
+
+    Request-URI: The Request-URI names the domain of the location service
+      for which the registration is meant (for example, "sip:chicago.com").
+      The "userinfo" and "@" components of the SIP URI MUST NOT be present.
+
+    To: The To header field contains the address of record whose
+      registration is to be created, queried, or modified.  The To header
+      field and the Request-URI field typically differ, as the former
+      contains a user name.  This address-of-record MUST be a SIP URI or
+      SIPS URI.
+
+    From: 
+
+    Call-ID:
+
+    CSeq: The CSeq value guarantees proper ordering of REGISTER requests.
+      A UA MUST increment the CSeq value by one for each REGISTER request
+      with the same Call-ID.
+
+    Contact: 
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates all these
+	headers as specified in all outgoing UAC REGISTER requests.
+
+
+  UAs MUST NOT send a new registration (that is, containing new Contact
+  header field values, as opposed to a retransmission) until they have
+  received a final response from the registrar for the previous one or the
+  previous REGISTER request has timed out.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not allow
+	REGISTERs to be sent unless any previous registrations are
+	completed.
+
+
+10.2.2 Removing Bindings
+
+  The REGISTER-specific Contact header field value of "*" applies to all
+  registrations, but it MUST NOT be used unless the Expires header field
+  is present with a value of "0".
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not generate
+	REGISTER requests that can remove bindings from a registrar
+	in the current release.
+
+
+11 Querying for Capabilities
+
+  All UAs MUST support the OPTIONS method.
+
+11.2 Processing of OPTIONS Request
+
+  The response to an OPTIONS is constructed using the standard rules for
+  a SIP response as discussed in Section 8.2.6.  The response code chosen
+  MUST be the same that would have been chosen had the request been an
+  INVITE.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent supports OPTIONS
+	requests as required.
+
+
+12.1 Creation of a Dialog
+
+  UAs MUST assign values to the dialog ID components as described below.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent assigns dialog ID
+	values as specified in this section.
+
+
+12.1.1 UAS behavior
+
+  When a UAS responds to a request with a response that establishes a
+  dialog (such as a 2xx to INVITE), the UAS MUST copy all Record-Route
+  header field values from the request into the response (including the
+  URIs, URI parameters, and any Record-Route header field parameters,
+  whether they are known or unknown to the UAS) and MUST maintain the
+  order of those values.  The UAS MUST add a Contact header field to the
+  response.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent copies all Record-Route
+	entries in the proper order when establishing a dialog and
+	a Contact header is always added to the response.
+
+
+  The URI provided in the Contact header field MUST be a SIP or SIPS URI.
+  If the request that initiated the dialog contained a SIPS URI in the
+  Request-URI or in the top Record-Route header field value, if there was
+  any, or the Contact header field if there was no Record-Route header
+  field, the Contact header field in the response MUST be a SIPS URI.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent does not implement
+	SIPS URIs in the current release.
+
+
+  The UAS then constructs the state of the dialog.  This state MUST be
+  maintained for the duration of the dialog.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent maintains dialog
+	state for the duration of each dialog.
+
+
+  The route set MUST be set to the list of URIs in the Record-Route header
+  field from the request, taken in order and preserving all URI parameters.
+  If no Record-Route header field is present in the request, the route set
+  MUST be set to the empty set.  This route set, even if empty, overrides
+  any pre-existing route set for future requests in this dialog.  The remote
+  target MUST be set to the URI from the Contact header field of the request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates a route
+	set from the Record-Route headers as specified.  If no
+	Record-Route headers are present, the route set is left empty.
+	The remote target for the dialog is set to the URI in the
+	Contact header.
+
+
+  The remote sequence number MUST be set to the value of the sequence
+  number in the CSeq header field of the request.  The local sequence
+  number MUST be empty.  The call identifier component of the dialog ID
+  MUST be set to the value of the Call-ID in the request.  The local
+  tag component of the dialog ID MUST be set to the tag in the To field
+  in the response to the request (which always includes a tag), and the
+  remote tag component of the dialog ID MUST be set to the tag from the
+  From field in the request.  A UAS MUST be prepared to receive a
+  request without a tag in the From field, in which case the tag is
+  considered to have a value of null.
+
+    This is to maintain backwards compatibility with RFC 2543, which did
+    not mandate From tags.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sets all the
+	dialog values as specified here and tolerates an empty
+	tag in the From field.
+
+
+  The remote URI MUST be set to the URI in the From field, and the local
+  URI MUST be set to the URI in the To field.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sets the values
+	of the remote URI and local URI to the URIs in the From and
+	To header lines, respectively.
+
+
+12.1.2 UAC Behavior
+
+  When a UAC sends a request that can establish a dialog (such as an
+  INVITE) it MUST provide a SIP or SIPS URI with global scope (i.e., the
+  same SIP URI can be used in messages outside this dialog) in the Contact
+  header field of the request.  If the request has a Request-URI or a
+  topmost Route header field value with a SIPS URI, the Contact header
+  field MUST contain a SIPS URI.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent sets URI in the
+	Contact header to a globally visible IP address.  The Cornfed
+	SIP User Agent does not implement SIPS URIs.
+
+
+  When a UAC receives a response that establishes a dialog, it constructs
+  the state of the dialog.  This state MUST be maintained for the duration
+  of the dialog.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent maintains dialog
+	state for the duration of each dialog.
+
+
+  The route set MUST be set to the list of URIs in the Record-Route header
+  field from the response, taken in reverse order and preserving all URI
+  parameters.  If no Record-Route header field is present in the response,
+  the route set MUST be set to the empty set.  This route set, even if
+  empty, overrides any pre-existing route set for future requests in this
+  dialog.  The remote target MUST be set to the URI from the Contact header
+  field of the response.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates a route
+	set from the Record-Route headers as specified.  If no
+	Record-Route headers are present, the route set is left empty.
+	The remote target for the dialog is set to the URI in the
+	Contact header.  Future requests always use the most current
+	route set which is recorded from these responses.  The remote
+	target in the dialog is set to the Contact URI.
+
+
+  The local sequence number MUST be set to the value of the sequence number
+  in the CSeq header field of the request.  The remote sequence number MUST
+  be empty (it is established when the remote UA sends a request within the
+  dialog).  The call identifier component of the dialog ID MUST be set to
+  the value of the Call-ID in the request.  The local tag component of the
+  dialog ID MUST be set to the tag in the From field in the request, and
+  the remote tag component of the dialog ID MUST be set to the tag in the
+  To field of the response.  A UAC MUST be prepared to receive a response
+  without a tag in the To field, in which case the tag is considered to have
+  a value of null.
+
+    This is to maintain backwards compatibility with RFC 2543, which did
+    not mandate To tags.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sets all the
+	dialog values as specified here and tolerates an empty
+	tag in the To field.
+
+
+  The remote URI MUST be set to the URI in the To field, and the local URI
+  MUST be set to the URI in the From field.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sets the values
+	of the remote URI and local URI to the URIs in the To and
+	From header lines, respectively.
+
+
+12.2.1 UAC Behavior
+
+12.2.1.1 Generating the Request
+
+  The URI in the To field of the request MUST be set to the remote URI from
+  the dialog state.  The tag in the To header field of the request MUST be
+  set to the remote tag of the dialog ID.  The From URI of the request MUST
+  be set to the local URI from the dialog state.  The tag in the From header
+  field of the request MUST be set to the local tag of the dialog ID.  If
+  the value of the remote or local tags is null, the tag parameter MUST be
+  omitted from the To or From header fields, respectively.
+
+    Usage of the URI from the To and From fields in the original request
+    within subsequent requests is done for backwards compatibility with RFC
+    2543, which used the URI for dialog identification.  In this
+    specification, only the tags are used for dialog identification.  It
+    is expected that mandatory reflection of the original To and From URI
+    in mid-dialog requests will be deprecated in a subsequent revision of
+    this specification.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sets the values
+	according to the specifications outlined here.
+
+
+  The Call-ID of the request MUST be set to the Call-ID of the dialog.
+  Requests within a dialog MUST contain strictly monotonically increasing
+  and contiguous CSeq sequence numbers (increasing-by-one) in each
+  direction (excepting ACK and CANCEL of course, whose numbers equal the
+  requests being acknowledged or cancelled).  Therefore, if the local
+  sequence number is not empty, the value of the local sequence number
+  MUST be incremented by one, and this value MUST be placed into the CSeq
+  header field.  If the local sequence number is empty, an initial value
+  MUST be chosen using the guidelines of Section 8.1.1.5.  The method
+  field in the CSeq header field value MUST match the method of the
+  request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sets the values
+	according to the specifications outlined here.
+
+
+  If the route set is empty, the UAC MUST place the remote target URI into
+  the Request-URI.  The UAC MUST NOT add a Route header field to the request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent places the remote
+	target into the request URI if the route set is empty and does
+	not include Route header lines.
+
+
+  If the route set is not empty, and the first URI in the route set
+  contains the lr parameter (see Section 19.1.1), the UAC MUST place the
+  remote target URI into the Request-URI and MUST include a Route header
+  field containing the route set values in order, including all parameters.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent assumes loose source
+	routing in the current release.  It does not search the route
+	set entries for the lr parameter.
+
+
+  If the route set is not empty, and its first URI does not contain the lr
+  parameter, the UAC MUST place the first URI from the route set into the
+  Request-URI, stripping any parameters that are not allowed in a
+  Request-URI.  The UAC MUST add a Route header field containing the
+  remainder of the route set values in order, including all parameters.
+  The UAC MUST then place the remote target URI into the Route header
+  field as the last value.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent assumes loose source
+	routing in the current release.  handle the Request-URI for 
+	strict routing as specified here.
+
+
+  If the "secure" flag is true, that URI MUST be a SIPS URI.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not support
+	SIPS URIs in the current release.
+
+
+12.2.1.2 Processing the Responses
+
+  When a UAC receives a 2xx response to a target refresh request, it MUST
+  replace the dialog's remote target URI with the URI from the Contact
+  header field in that response, if present.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not issue
+	target refresh requests and so will never be required to
+	update the remote target URI.
+
+
+12.2.2 UAS Behavior
+
+  If the UAS wishes to reject the request because it does not wish to
+  recreate the dialog, it MUST respond to the request with a 481
+  (Call/Transaction Does Not Exist) status code and pass that to the
+  server transaction.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sends a 481
+	Call/Transaction Does Not Exist code if a request is
+	rejected because it does not match the existing dialog.
+
+
+  If the remote sequence number is empty, it MUST be set to the value of
+  the sequence number in the CSeq header field value in the request.  If
+  the remote sequence number was not empty, but the sequence number of the
+  request is lower than the remote sequence number, the request is out of
+  order and MUST be rejected with a 500 (Server Internal Error) response.
+
+  The UAS MUST then set the remote sequence number to the value of the
+  sequence number in the CSeq header field value in the request.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent sets the value of
+	the remote sequence number if it is empty but does not send
+	a 500 Internal Server Error if the sequence number in the
+	request is less than that in the dialog.  The remote sequence
+	number is updated under all circumstances.
+
+
+  When a UAS receives a target refresh request, it MUST replace the
+  dialog's remote target URI with the URI from the Contact header field
+  in that request, if present.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent updates the dialog's
+	remote target using the Contact header line of any
+	received re-INVITEs.
+
+
+13 Initiating a Session
+
+13.1 Overview
+
+  A UA that supports INVITE MUST also support ACK, CANCEL and BYE.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent supports all of these
+	requests.
+
+
+13.2 UAC Processing
+
+13.2.1 Creating the Initial INVITE
+
+  The initial offer MUST be in either an INVITE or, if not there, in the
+  first reliable non-failure message from the UAS back to the UAC.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always includes
+	offered SDP in the initial INVITE.
+
+
+  If the initial offer is in an INVITE, the answer MUST be in a reliable
+  non-failure message from UAS back to UAC which is correlated to that
+  INVITE.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always includes
+	answered SDP in the 200 OK response which is sent reliably.
+
+
+  The UAC MUST treat the first session description it receives as the
+  answer, and MUST ignore any session descriptions in subsequent responses
+  to the initial INVITE.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent assumes that
+	the G.711 codec is specified in the answered SDP and only
+	looks for the IP address and UDP port number to which RTP
+	is to be sent.  It does not look at SDP in any subsequent
+	messages.
+
+
+  If the initial offer is in the first reliable non-failure message from
+  the UAS back to UAC, the answer MUST be in the acknowledgement for that
+  message (in this specification, ACK for a 2xx response).
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent assumes the SDP
+	offer is in the INVITE and the answer is in the 200 OK in
+	the current release.
+
+
+  Once the UAS has sent or received an answer to the initial offer, it MUST
+  NOT generate subsequent offers in any responses to the initial INVITE.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not modify its
+	offers or answers.
+
+
+  Concretely, the above rules specify two exchanges for UAs compliant to
+  this specification alone - the offer is in the INVITE, and the answer
+  in the 2xx (and possibly in a 1xx as well, with the same value), or the
+  offer is in the 2xx, and the answer is in the ACK.  All user agents that
+  support INVITE MUST support these two exchanges.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent assumes the SDP
+	offer is in the INVITE and the answer is in the 200 OK in
+	the current release.
+
+
+  The Session Description Protocol (SDP) (RFC 2327 [1]) MUST be supported
+  by all user agents as a means to describe sessions, and its usage for
+  constructing offers and answers MUST follow the procedures defined in [13].
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent uses RFC 2327 SDP
+	to describe sessions.
+
+
+13.2.2.3 4xx, 5xx and 6xx Responses
+
+  Subsequent final responses (which would only arrive under error
+  conditions) MUST be ignored.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent ignores subsequent
+	final responses.
+
+
+13.2.2.4 2xx Responses
+
+  If the dialog identifier in the 2xx response matches the dialog
+  identifier of an existing dialog, the dialog MUST be transitioned to
+  the "confirmed" state, and the route set for the dialog MUST be
+  recomputed based on the 2xx response using the procedures of Section
+  12.2.1.2.  Otherwise, a new dialog in the "confirmed" state MUST be
+  constructed using the procedures of Section 12.1.2.
+
+    Note that the only piece of state that is recomputed is the route set.
+    Other pieces of state such as the highest sequence numbers (remote and
+    local) sent within the dialog are not recomputed.  The route set only
+    is recomputed for backwards compatibility.  RFC 2543 did not mandate
+    mirroring of the Record-Route header field in a 1xx, only 2xx.  However,
+    we cannot update the entire state of the dialog, since mid-dialog
+    requests may have been sent within the early dialog, modifying the
+    sequence numbers, for example.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent updates the route
+	set as specified and logically transitions to the "confirmed"
+	state.
+
+
+  The UAC core MUST generate an ACK request for each 2xx received from the
+  transaction layer.  The header fields of the ACK are constructed in the
+  same way as for any request sent within a dialog (see Section 12) with
+  the exception of the CSeq and the header fields related to authentication.
+  The sequence number of the CSeq header field MUST be the same as the
+  INVITE being acknowledged, but the CSeq method MUST be ACK.  The ACK
+  MUST contain the same credentials as the INVITE.  If the 2xx contains an
+  offer (based on the rules above), the ACK MUST carry an answer in its
+  body.  If the offer in the 2xx response is not acceptable, the UAC core
+  MUST generate a valid answer in the ACK and then send a BYE immediately.
+
+  Once the ACK has been constructed, the procedures of [4] are used to
+  determine the destination address, port and transport.  However, the
+  request is passed to the transport layer directly for transmission,
+  rather than a client transaction.  This is because the UAC core handles
+  retransmissions of the ACK, not the transaction layer.  The ACK MUST be
+  passed to the client transport every time a retransmission of the 2xx
+  final response that triggered the ACK arrives.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not implement
+	a distinct transaction layer.  However, any 2xx response received
+	is passed to the appropriate UAC handler and ACKs are generated
+	as required.
+
+
+  If, after acknowledging any 2xx response to an INVITE, the UAC does not
+  want to continue with that dialog, then the UAC MUST terminate the dialog
+  by sending a BYE request as described in Section 15.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sends BYE requests to
+	terminate sessions once they are established by acknowledging
+	with a 2xx response.
+
+
+13.3 UAS Processing
+
+13.3.1 Processing of the INVITE
+
+  If the INVITE does not contain a session description, the UAS is being
+  asked to participate in a session, and the UAC has asked that the UAS
+  provide the offer of the session.  It MUST provide the offer in its
+  first non-failure reliable message back to the UAC.  In this
+  specification, that is a 2xx response to the INVITE.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent expects an offer
+	in the initial INVITE and sends an answer in the initial
+	2xx response.  This will be updated in future releases.
+
+
+13.3.1.1 Progress
+
+  A UAS MAY send as many provisional responses as it likes.  Each of these
+  MUST indicate the same dialog ID.  However, these will not be delivered
+  reliably.
+
+  To prevent cancellation, the UAS MUST send a non-100 provisional response
+  at every minute, to handle the possibility of lost provisional responses.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent currently sends only
+	one non-1xx provisional response, a 180 Ringing.  This will be
+	addresses in a future release.
+
+
+13.3.1.4 The INVITE is Accepted
+
+  If the INVITE request contained an offer, and the UAS had not yet sent
+  an answer, the 2xx MUST contain an answer.  If the INVITE did not
+  contain an offer, the 2xx MUST contain an offer if the UAS had not yet
+  sent an offer.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent expects an offer
+	in the initial INVITE and sends an answer in the initial
+	2xx response.  This will be updated in future releases.
+
+
+14.1 UAC Behavior
+
+  Note that a UAC MUST NOT initiate a new INVITE transaction within a
+  dialog while another INVITE transaction is in progress in either
+  direction.
+
+    1. If there is an ongoing INVITE client transaction, the TU MUST wait
+       until the transaction reaches the completed or terminated state
+       before initiating the new INVITE.
+
+    2. If there is an ongoing INVITE server transaction, the TU MUST wait
+       until the transaction reaches the confirmed or terminated state
+       before initiating the new INVITE.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not allow
+	new dialogs as long as a session is in progress.
+
+
+  If a UA receives a non-2xx final response to a re-INVITE, the session
+  parameters MUST remain unchanged, as if no re-INVITE had been issued.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not send
+	re-INVITEs in the current release.
+
+
+14.2 UAS Behavior
+
+  A UAS that receives a second INVITE before it sends the final response
+  to a first INVITE with a lower CSeq sequence number on the same dialog
+  MUST return a 500 (Server Internal Error) response to the second INVITE
+  and MUST include a Retry-After header field with a randomly chosen value
+  of between 0 and 10 seconds.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sends a 500 Internal
+	Server Error response as specified when this situation arises.
+
+
+  A UAS that receives an INVITE on a dialog while an INVITE it had sent on
+  that dialog is in progress MUST return a 491 (Request Pending) response
+  to the received INVITE.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sends a 491 Request
+	Pending response if an INVITE is received when another dialog
+	has already been initiated.
+
+
+  If a UA receives a re-INVITE for an existing dialog, it MUST check any
+  version identifiers in the session description or, if there are no
+  version identifiers, the content of the session description to see if
+  it has changed.  If the session description has changed, the UAS MUST
+  adjust the session parameters accordingly, possibly after asking the
+  user for confirmation.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent will adjust the
+	IP address and UDP port number of the session endpoint only
+	in the current release.
+
+
+  The UAS MUST ensure that the session description overlaps with its
+  previous session description in media formats, transports, or other
+  parameters that require support from the peer.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not check for
+	session description overlaps in received re-INVITEs in the
+	current release.
+
+
+15 Terminating a Session
+
+  A UA MUST NOT send a BYE outside of a dialog.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent never sends a BYE
+	outside a dialog.
+
+
+  The caller's UA MAY send a BYE for either confirmed or early dialogs, and
+  the callee's UA MAY send a BYE on confirmed dialogs, but MUST NOT send a
+  BYE on early dialogs.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent UAS does not send
+	BYE requests for early dialogs.
+
+
+  However, the callee's UA MUST NOT send a BYE on a confirmed dialog until
+  it has received an ACK for its 2xx response or until the server
+  transaction times out. 
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent UAS does not send
+	BYE requests unless the session is in the established state
+
+
+15.1.1 UAC Behavior
+
+  The UAC MUST consider the session terminated (and therefore stop sending
+  or listening for media) as soon as the BYE request is passed to the client
+  transaction.  If the response for the BYE is a 481 (Call/Transaction Does
+  Not Exist) or a 408 (Request Timeout) or no response at all is received
+  for the BYE (that is, a timeout is returned by the client transaction),
+  the UAC MUST consider the session and the dialog terminated.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent terminates the session
+	as soon as the BYE is sent.  The BYE is sent reliably and the
+	dialog is deleted if the retransmissions timeout.
+
+
+15.1.2 UAS Behavior
+
+  A UAS core receiving a BYE request for an existing dialog MUST follow the
+  procedures of Section 12.2.2 to process the request.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent follows the
+	procedures for the BYE request in Section 12.2.2 except where
+	noted in that section.
+
+
+  Whether or not it ends its participation on the session, the UAS core MUST
+  generate a 2xx response to the BYE, and MUST pass that to the server
+  transaction for transmission.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always generates a
+	200 OK response to the BYE within the other restrictions
+	of this standard.
+
+
+  The UAS MUST still respond to any pending requests received for that
+  dialog.  It is RECOMMENDED that a 487 (Request Terminated) response be
+  generated to those pending requests.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent does not implement
+	an explicit transaction layer and so after deleting the dialog,
+	it will be impossible to send 487 Request Terminated responses.
+	Instead, 481 Call/Transaction Does Not Exist responses will
+	be generated instead.  This behavior should be acceptable
+	since all 4xx responses should be handled similarly.
+
+
+16 Proxy Behavior
+
+
+17.1.1.2 Formal Description
+
+  The state machine for the INVITE client transaction is shown in Figure 5.
+  The initial state, "calling", MUST be entered when the TU initiates a new
+  client transaction with an INVITE request.  The client transaction MUST
+  pass the request to the transport layer for transmission (see Section 18).
+  If an unreliable transport is being used, the client transaction MUST
+  start timer A with a value of T1.  If a reliable transport is being used,
+  the client transaction SHOULD NOT start timer A (Timer A controls request
+  retransmissions).  For any transport, the client transaction MUST start
+  timer B with a value of 64*T1 seconds (Timer B controls transaction
+  timeouts).
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent handles state
+	transitions and timers as specified.
+
+
+  When timer A fires, the client transaction MUST retransmit the request
+  by passing it to the transport layer, and MUST reset the timer with a
+  value of 2*T1.  The formal definition of retransmit within the context
+  of the transaction layer is to take the message previously sent to the
+  transport layer and pass it to the transport layer once more.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent backs off the T1 timer
+	as specified.
+
+
+  When timer A fires 2*T1 seconds later, the request MUST be retransmitted
+  again (assuming the client transaction is still in this state).
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent retransmits requests
+	when the T1 timer expires.
+
+
+  This process MUST continue so that the request is retransmitted with
+  intervals that double after each transmission.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent retransmits exhibits
+	this behavior.
+
+
+  Whatever the value of T1, the exponential backoffs on retransmissions
+  described in this section MUST be used.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent implements this
+	exponential backoff.
+
+
+  If the client transaction is still in the "Calling" state when timer B
+  fires, the client transaction SHOULD inform the TU that a timeout has
+  occurred.  The client transaction MUST NOT generate an ACK.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent tears down the call
+	and notifies the user when Timer B expires and does not send
+	an ACK.
+
+
+  In the "Proceeding" state, the client transaction SHOULD NOT retransmit
+  the request any longer. Furthermore, the provisional response MUST be
+  passed to the TU.  Any further provisional responses MUST be passed up
+  to the TU while in the "Proceeding" state.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent UA handles all
+	incoming provisional responses.
+
+
+  When in either the "Calling" or "Proceeding" states, reception of a
+  response with status code from 300-699 MUST cause the client transaction
+  to transition to "Completed".  The client transaction MUST pass the
+  received response up to the TU, and the client transaction MUST generate
+  an ACK request, even if the transport is reliable (guidelines for
+  constructing the ACK from the response are given in Section 17.1.1.3) and
+  then pass the ACK to the transport layer for transmission.  The ACK MUST
+  be sent to the same address, port, and transport to which the original
+  request was sent.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent passes any response
+	to the UA which transitions to the "completed" state and
+	sends an ACK.
+
+
+  Any retransmissions of the final response that are received while in the
+  "Completed" state MUST cause the ACK to be re-passed to the transport
+  layer for retransmission, but the newly received response MUST NOT be
+  passed up to the TU.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent does not implement
+	an explicit transaction layer.  The UA passing to the "completed"
+	state causes the dialog to be cleared.  Any additional final
+	responses are subsequently ignored.
+
+
+  If timer D fires while the client transaction is in the "Completed" state,
+  the client transaction MUST move to the terminated state.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not implement
+	Timer D because there is no explicit transaction layer that
+	handles retransmissions for "completed" states.
+
+
+  When in either the "Calling" or "Proceeding" states, reception of a 2xx
+  response MUST cause the client transaction to enter the "Terminated"
+  state, and the response MUST be passed up to the TU.  The handling of
+  this response depends on whether the TU is a proxy core or a UAC core.
+  A UAC core will handle generation of the ACK for this response, while
+  a proxy core will always forward the 200 (OK) upstream.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent emulates this
+	behavior without implementing an explicit transaction layer.
+
+
+  The client transaction MUST be destroyed the instant it enters the
+  "Terminated" state. 
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent emulates this
+	behavior without implementing an explicit transaction layer.
+
+
+17.1.1.3 Construction of the ACK Request
+
+  This section specifies the construction of ACK requests sent within the
+  client transaction.  A UAC core that generates an ACK for 2xx MUST
+  instead follow the rules described in Section 13.
+
+  The ACK request constructed by the client transaction MUST contain
+  values for the Call-ID, From, and Request-URI that are equal to the
+  values of those header fields in the request passed to the transport
+  by the client transaction (call this the "original request").  The To
+  header field in the ACK MUST equal the To header field in the response
+  being acknowledged, and therefore will usually differ from the To header
+  field in the original request by the addition of the tag parameter.
+  The ACK MUST contain a single Via header field, and this MUST be equal
+  to the top Via header field of the original request.  The CSeq header
+  field in the ACK MUST contain the same value for the sequence number as
+  was present in the original request, but the method parameter MUST be
+  equal to "ACK".
+
+  If the INVITE request whose response is being acknowledged had Route
+  header fields, those header fields MUST appear in the ACK.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not retransmit
+	ACKs in the current release.
+
+
+17.1.2.2 Formal Description
+
+  When entering this state, the client transaction SHOULD set timer F to
+  fire in 64*T1 seconds.  The request MUST be passed to the transport layer
+  for transmission.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sets Timer F and
+	passes the request for transport as specified.
+
+
+  If an unreliable transport is in use, the client transaction MUST set
+  timer E to fire in T1 seconds.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent sets Timer E as
+	specified.
+
+
+  If a provisional response is received while in the "Trying" state, the
+  response MUST be passed to the TU, and then the client transaction SHOULD
+  move to the "Proceeding" state.  If a final response (status codes
+  200-699) is received while in the "Trying" state, the response MUST be
+  passed to the TU, and the client transaction MUST transition to the
+  "Completed" state.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent ignores any response
+	except a 2xx response in the "Trying" state in the current
+	release.  2xx responses are handled as specified.
+
+
+  If Timer E fires while in the "Proceeding" state, the request MUST be
+  passed to the transport layer for retransmission, and Timer E MUST be
+  reset with a value of T2 seconds.  If timer F fires while in the
+  "Proceeding" state, the TU MUST be informed of a timeout, and the client
+  transaction MUST transition to the terminated state.  If a final response
+  (status codes 200-699) is received while in the "Proceeding" state, the
+  response MUST be passed to the TU, and the client transaction MUST
+  transition to the "Completed" state.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent uses the same
+	exponential backoff for INVITE and non-INVITE transaction
+	types.
+
+
+  Once the client transaction enters the "Completed" state, it MUST set
+  Timer K to fire in T4 seconds for unreliable transports, and zero seconds
+  for reliable transports. 
+
+  If Timer K fires while in this state, the client transaction MUST
+  transition to the "Terminated" state.
+
+  Once the transaction is in the terminated state, it MUST be destroyed
+  immediately.
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent does not implement
+	an explicit transaction layer.  It terminates the dialog upon
+	entering the "completed" state which guarantees the transaction
+	has already been deleted when the transaction is terminated.
+
+
+17.2.1 INVITE Server Transaction
+
+  When a server transaction is constructed for a request, it enters the
+  "Proceeding" state.  The server transaction MUST generate a 100 (Trying)
+  response unless it knows that the TU will generate a provisional or final
+  response within 200 ms, in which case it MAY generate a 100 (Trying)
+  response.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always generates
+	a 100 Trying response immediately upon receipt of an INVITE
+	request.
+
+
+  The 100 (Trying) response is constructed according to the procedures in
+  Section 8.2.6, except that the insertion of tags in the To header field
+  of the response (when none was present in the request) is downgraded from
+  MAY to SHOULD NOT.  The request MUST be passed to the TU.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent always processes
+	the incoming request.
+
+
+  The TU passes any number of provisional responses to the server transaction.
+  So long as the server transaction is in the "Proceeding" state, each of
+  these MUST be passed to the transport layer for transmission.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent can send any number
+	of provisional responses in the "Proceeding" state.
+
+
+  If a request retransmission is received while in the "Proceeding" state,
+  the most recent provisional response that was received from the TU MUST
+  be passed to the transport layer for retransmission.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not retransmit
+	the most recent provisional reponse if a retransmitted request
+	is received in the current release.
+
+
+  If, while in the "Proceeding" state, the TU passes a 2xx response to the
+  server transaction, the server transaction MUST pass this response to the
+  transport layer for transmission.  It is not retransmitted by the server
+  transaction; retransmissions of 2xx responses are handled by the TU.  The
+  server transaction MUST then transition to the "Terminated" state.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent transmits the 2xx
+	and emulates the "Terminated" state behavior.
+
+
+  While in the "Proceeding" state, if the TU passes a response with status
+  code from 300 to 699 to the server transaction, the response MUST be
+  passed to the transport layer for transmission, and the state machine
+  MUST enter the "Completed" state.  For unreliable transports, timer G is
+  set to fire in T1 seconds, and is not set to fire for reliable transports.
+
+    This is a change from RFC 2543, where responses were always
+    retransmitted, even over reliable transports.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent transmits the response,
+	enters the "Completed" state as specified and sets Timer G
+	as specified.
+
+
+  When the "Completed" state is entered, timer H MUST be set to fire in
+  64*T1 seconds for all transports.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent expires retransmissions
+	using Timer H.
+
+
+  If an ACK is received while the server transaction is in the "Completed"
+  state, the server transaction MUST transition to the "Confirmed" state.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent transitions to the
+	"Confirmed" state.
+
+
+  If timer H fires while in the "Completed" state, it implies that the ACK
+  was never received.  In this case, the server transaction MUST transition
+  to the "Terminated" state, and MUST indicate to the TU that a transaction
+  failure has occurred.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent transitions to the
+	"Terminated" state and deletes the dialog.
+
+
+  When this state is entered, timer I is set to fire in T4 seconds for
+  unreliable transports, and zero seconds for reliable transports.  Once
+  timer I fires, the server MUST transition to the "Terminated" state.
+
+  Once the transaction is in the "Terminated" state, it MUST be destroyed
+  immediately.
+
+
+	FULLY COMPLY: Since there is no explicit transaction layer,
+	the indication to the UA that the "Completed" state has happend
+	is responded to the TU (i.e. the UA) immediately.  Therefore,
+	Timer I is not required.
+
+
+17.2.2 Non-INVITE Server Transaction
+
+  While in the "Trying" state, if the TU passes a provisional response to
+  the server transaction, the server transaction MUST enter the "Proceeding"
+  state.  The response MUST be passed to the transport layer for
+  transmission.  Any further provisional responses that are received from
+  the TU while in the "Proceeding" state MUST be passed to the transport
+  layer for transmission.  If a retransmission of the request is received
+  while in the "Proceeding" state, the most recently sent provisional
+  response MUST be passed to the transport layer for retransmission.  If
+  the TU passes a final response (status codes 200-699) to the server while
+  in the "Proceeding" state, the transaction MUST enter the "Completed"
+  state, and the response MUST be passed to the transport layer for
+  transmission.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent passes provisional
+	responses, enters the "Proceeding" state and passes additional
+	provisional responses if generated.  It does not, however,
+	retransmit the last provisional response if a retransmitted
+	request is received.  If the final response is received the
+	dialog enters the "Completed" state.
+
+
+  When the server transaction enters the "Completed" state, it MUST set
+  Timer J to fire in 64*T1 seconds for unreliable transports, and zero
+  seconds for reliable transports.  While in the "Completed" state, the
+  server transaction MUST pass the final response to the transport layer
+  for retransmission whenever a retransmission of the request is received.
+  Any other final responses passed by the TU to the server transaction MUST
+  be discarded while in the "Completed" state.  The server transaction
+  remains in this state until Timer J fires, at which point it MUST
+  transition to the "Terminated" state.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not retransmit
+	the final response upon receipt of retransmitted requests in 
+	the current release.
+
+
+  The server transaction MUST be destroyed the instant it enters the
+  "Terminated" state.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent dialog has been
+	destroyed before the transaction enters the "Terminated" state
+	in the current release.
+
+
+18 Transport
+
+  All SIP elements MUST implement UDP and TCP.  SIP elements MAY implement
+  other protocols.
+
+  Making TCP mandatory for the UA is a substantial change from RFC 2543.
+  It has arisen out of the need to handle larger messages, which MUST use
+  TCP, as discussed below.  Thus, even if an element never sends large
+  messages, it may receive one and needs to be able to handle them.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent implements UDP
+	only in the current release.
+
+
+18.1.1 Sending Requests
+
+  If a request is within 200 bytes of the path MTU, or if it is larger
+  than 1300 bytes and the path MTU is unknown, the request MUST be sent
+  using an RFC 2914 [43] congestion controlled transport protocol, such
+  as TCP. If this causes a change in the transport protocol from the one
+  indicated in the top Via, the value in the top Via MUST be changed.
+  This prevents fragmentation of messages over UDP and provides congestion
+  control for larger messages.  However, implementations MUST be able to
+  handle messages up to the maximum datagram packet size.  For UDP, this
+  size is 65,535 bytes, including IP and UDP headers.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent implements UDP
+	only in the current release.
+
+
+  A client that sends a request to a multicast address MUST add the
+  "maddr" parameter to its Via header field value containing the
+  destination multicast address, and for IPv4, SHOULD add the "ttl"
+  parameter with a value of 1. 
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not distinguish
+	between uni and multicast addresses and does not handle the
+	maddr or ttl parameters in the current release.
+
+
+  Before a request is sent, the client transport MUST insert a value of
+  the "sent-by" field into the Via header field.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent adds the sent-by
+	parameter to Via header lines as specified.
+
+
+  For reliable transports, the response is normally sent on the connection
+  on which the request was received.  Therefore, the client transport MUST
+  be prepared to receive the response on the same connection used to send
+  the request.  Under error conditions, the server may attempt to open a
+  new connection to send the response.  To handle this case, the transport
+  layer MUST also be prepared to receive an incoming connection on the
+  source IP address from which the request was sent and port number in the
+  "sent-by" field.  It also MUST be prepared to receive incoming connections
+  on any address and port that would be selected by a server based on the
+  procedures described in Section 5 of [4].
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does implement reliable
+	transports in the current release.
+
+
+  For unreliable unicast transports, the client transport MUST be prepared
+  to receive responses on the source IP address from which the request is
+  sent (as responses are sent back to the source address) and the port
+  number in the "sent-by" field.  Furthermore, as with reliable transports,
+  in certain cases the response will be sent elsewhere.  The client MUST be
+  prepared to receive responses on any address and port that would be
+  selected by a server based on the procedures described in Section 5 of [4].
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent can receive responses
+	from the same source IP address that requests are sent to.  The
+	Cornfed SIP User Agent does not support RFC 3263 in the current
+	release.
+
+
+  For multicast, the client transport MUST be prepared to receive responses
+  on the same multicast group and port to which the request is sent (that is,
+  it needs to be a member of the multicast group it sent the request to.)
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not distinguish
+	between uni and multicast addresses.
+
+
+18.1.2 Receiving Responses
+
+  If the value of the "sent-by" parameter in that header field value does
+  not correspond to a value that the client transport is configured to
+  insert into requests, the response MUST be silently discarded.
+
+  If there is a match, the response MUST be passed to that transaction.
+  Otherwise, the response MUST be passed to the core (whether it be
+  stateless proxy, stateful proxy, or UA) for further processing.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent checks the sent-by
+	parameter in the Via header line of responses.
+
+
+18.2 Servers
+
+18.3 Framing
+
+  If there are additional bytes in the transport packet beyond the end of
+  the body, they MUST be discarded.  If the transport packet ends before the
+  end of the message body, this is considered an error.  If the message is a
+  response, it MUST be discarded.  If the message is a request, the element
+  SHOULD generate a 400 (Bad Request) response.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not use the
+	Content-Length header to limit the message length in the
+	current release.
+
+
+  The Content- Length header field MUST be used with stream oriented
+  transports.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not use 
+	stream-oriented transports.
+
+
+19.1.1 SIP and SIPS URI Components
+
+  If the @ sign is present in a SIP or SIPS URI, the user field MUST NOT be
+  empty.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent will parse a URI
+	that has an @ sign and no user field.  This check is not made
+	but the resulting URI structure is left with an empty
+	user field in the current release.
+
+
+  Even though an arbitrary number of URI parameters may be included in a
+  URI, any given parameter-name MUST NOT appear more than once.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent does not generate
+	any URI parameters but also does not parse any URI parameters
+	in the current release.
+
+
+  For a SIPS URI, the transport parameter MUST indicate a reliable transport.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not parse
+	any URI parameters in the current release.
+
+
+  The ttl parameter determines the time-to-live value of the UDP multicast
+  packet and MUST only be used if maddr is a multicast address and the
+  transport protocol is UDP.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not parse
+	any URI parameters in the current release.
+
+
+  Since the uri-parameter mechanism is extensible, SIP elements MUST
+  silently ignore any uri-parameters that they do not understand.
+
+
+	FULLY COMPLY: Since the Cornfed SIP User Agent does not parse
+	any URI parameters in the current release, it ignores all
+	parameters by default.
+
+
+19.1.2 Character Escaping Requirements
+
+  Excluded US- ASCII characters (RFC 2396 [5]), such as space and control
+  characters and characters used as URI delimiters, also MUST be escaped.
+  URIs MUST NOT contain unescaped space and control characters.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not include
+	any characters that need to be escaped.
+
+
+  Expanding the hname and hvalue tokens in Section 25 show that all URI
+  reserved characters in header field names and values MUST be escaped.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent only parses elements
+	of the SIP messages as the are needed.  Any escaped characters
+	in any headers fields are handled mainly by built-in string
+	functions that handle escaped characters.
+
+
+  Any characters occurring in a telephone-subscriber that do not appear in
+  an expansion of the BNF for the user rule MUST be escaped.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not use telephone-
+	subscribers in the current release.  For incoming messages, the
+	telephone-subscriber user part is treated opaquely and the built-in
+	string functions handle escaped characters.
+
+
+  Current implementations MUST NOT attempt to improve robustness by treating
+  received escaped characters in the host component as literally equivalent
+  to their unescaped counterpart.
+
+
+	FULLY COMPLY: The built-in string functions used by the
+	Cornfed SIP User Agent do not treat escapced character in the
+	host component as literally equivalent to their unescaped
+	counterparts.
+
+
+19.1.4 URI Comparison
+
+  URI header components are never ignored.  Any present header component
+  MUST be present in both URIs and match for the URIs to match. 
+
+
+	FULLY COMPLY: Any URI comparisons match the header components
+	exactly.
+
+
+19.1.5 Forming Requests from a URI
+
+  An implementation MUST include any provided transport, maddr, ttl, or
+  user parameter in the Request-URI of the formed request.  If the URI
+  contains a method parameter, its value MUST be used as the method of the
+  request.  The method parameter MUST NOT be placed in the Request-URI.
+  Unknown URI parameters MUST be placed in the message's Request-URI.
+
+
+	DO NOT COMPLY: The current release does not parse any URI
+	parameters, and as such, any regenerated URIs will not include
+	these parameters.
+
+
+  If the request formed from constructing a message from a given URI is
+  not a valid SIP request, the URI is invalid.  An implementation MUST NOT
+  proceed with transmitting the request.
+
+
+	DO NOT COMPLY: The current release does not check whether a
+	request formed from constructing a message using a given
+	URI results in a valid SIP request.
+
+
+  An implementation MUST NOT send a request requiring an extension that it
+  does not support.
+
+
+	FULLY COMPLY: no request extensions are sent and so none are 
+	sent that are not supported.
+
+
+19.3 Tags
+
+  When a tag is generated by a UA for insertion into a request or response,
+  it MUST be globally unique and cryptographically random with at least 32
+  bits of randomness.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent creates globally unique
+	tags with greater than 32-bits of randomness.
+
+
+20 Header Fields
+
+    t: The header field SHOULD be sent, but clients/servers need to be
+       prepared to receive messages without that header field.
+
+  If a stream-based protocol (such as TCP) is used as a transport, then the
+  header field MUST be sent.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not use stream-
+	oriented transports.
+
+
+  A "mandatory" header field MUST be present in a request, and MUST be
+  understood by the UAS receiving the request.  A mandatory response header
+  field MUST be present in the response, and the header field MUST be
+  understood by the UAC processing the response.  "Not applicable" means
+  that the header field MUST NOT be present in a request.  If one is placed
+  in a request by mistake, it MUST be ignored by the UAS receiving the
+  request.  Similarly, a header field labeled "not applicable" for a response
+  means that the UAS MUST NOT place the header field in the response, and
+  the UAC MUST ignore the header field in the response.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates all
+	mandatory header lines and checks all incoming requests
+	for the proper mandatory headers.
+
+
+  The Contact, From, and To header fields contain a URI.  If the URI
+  contains a comma, question mark or semicolon, the URI MUST be enclosed
+  in angle brackets (< and >).
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent parses URIs
+	regardless of whether they are contained in angle brackets.
+	The UA does not explicitly check this requirement.
+
+
+20.5 Allow
+
+  All methods, including ACK and CANCEL, understood by the UA MUST be
+  included in the list of methods in the Allow header field, when present.
+  The absence of an Allow header field MUST NOT be interpreted to mean that
+  the UA sending the message supports no methods.   Rather, it implies that
+  the UA is not providing any information on what methods it supports.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates all
+	methods it understands in the Allow header line.
+
+
+20.7 Authorization
+
+  Although not a comma- separated list, this header field name may be
+  present multiple times, and MUST NOT be combined into a single header line
+  using the usual rules described in Section 7.3.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not combine
+	multiple instances of this header line.
+
+
+20.10 Contact
+
+  Even if the "display-name" is empty, the "name-addr" form MUST be used if
+  the "addr-spec" contains a comma, semicolon, or question mark. 
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not check for
+	this occurrence in the current release.
+
+
+20.12 Content-Encoding
+
+  The Content-Encoding header field is used as a modifier to the
+  "media-type".  When present, its value indicates what additional content
+  codings have been applied to the entity-body, and thus what decoding
+  mechanisms MUST be applied in order to obtain the media-type referenced
+  by the Content-Type header field.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not check
+	the Content-Encoding header line in the current release.
+
+
+  If multiple encodings have been applied to an entity-body, the content
+  codings MUST be listed in the order in which they were applied.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not handle
+	multiple encodings in the current release.
+
+
+  The server MUST only use encodings listed in the Accept-Encoding header
+  field in the request.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not look at
+	the Accept-Encoding header line in any requests.
+
+
+20.14 Content-Length
+
+  If a stream-based protocol (such as TCP) is used as transport, the header
+  field MUST be used.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not look at
+	the Content-Length header line in incoming messages.
+
+
+  If no body is present in a message, then the Content-Length header field
+  value MUST be set to zero.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not perform
+	this check.
+
+
+20.15 Content-Type
+
+  The Content-Type header field MUST be present if the body is not empty.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not perform
+	this check.
+
+
+20.16 CSeq
+
+  A CSeq header field in a request contains a single decimal sequence number
+  and the request method.  The sequence number MUST be expressible as a
+  32-bit unsigned integer.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates simple
+	integers for the CSeq sequence number and uses the atoi()
+	function to retrieve sequence numbers from incoming messages.
+
+
+20.20 From
+
+  Even if the "display-name" is empty, the "name-addr" form MUST be used if
+  the "addr-spec" contains a comma, question mark, or semicolon.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not check for
+	this occurrence in the current release.
+
+
+20.28 Proxy-Authorization
+
+  Although not a comma-separated list, this header field name may be present
+  multiple times, and MUST NOT be combined into a single header line using
+  the usual rules described in Section 7.3.1.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not combine
+	multiple instances of this header line.
+
+
+20.31 Reply-To
+
+  Even if the "display-name" is empty, the "name-addr" form MUST be used if
+  the "addr-spec" contains a comma, question mark, or semicolon.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not check for
+	this occurrence in the current release.
+
+
+20.32 Require
+
+  The Require header field is used by UACs to tell UASs about options that
+  the UAC expects the UAS to support in order to process the request.
+  Although an optional header field, the Require MUST NOT be ignored if it
+  is present.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent UAS checks for the
+	presence of the Require header.
+
+
+  The Require header field contains a list of option tags, described in
+  Section 19.2.  Each option tag defines a SIP extension that MUST be
+  understood to process the request.  Frequently, this is used to indicate
+  that a specific set of extension header fields need to be understood.
+  A UAC compliant to this specification MUST only include option tags
+  corresponding to standards-track RFCs.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not generate
+	a Require header line and so includes only option tags
+	corresponding to standards-track RFCs.
+
+
+20.37 Supported
+
+  A UA compliant to this specification MUST only include option tags
+  corresponding to standards-track RFCs.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not generate
+	a Supported header line and so includes only option tags
+	corresponding to standards-track RFCs.
+
+
+20.42 Via
+
+  For implementations compliant to this specification, the value of the
+  branch parameter MUST start with the magic cookie "z9hG4bK", as discussed
+  in Section 8.1.1.7.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent only generates
+	branch parameters with this prefix.
+
+
+20.43 Warning
+
+  399 Miscellaneous warning: The warning text can include arbitrary
+  information to be presented to a human user or logged.  A system
+  receiving this warning MUST NOT take any automated action.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not check
+	for the Warning header line.
+
+
+21.3.3 302 Moved Temporarily
+
+  If there is no explicit expiration time, the address is only valid once
+  for recursing, and MUST NOT be cached for future transactions.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not check
+	for an explicit expiration time.
+
+
+21.3.4 305 Use Proxy
+
+  The requested resource MUST be accessed through the proxy given by the
+  Contact field.  The Contact field gives the URI of the proxy.  The
+  recipient is expected to repeat this single request via the proxy.
+  305 (Use Proxy) responses MUST only be generated by UASs.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not check
+	for this response code and does not redirect the request to
+	the proxy in the Contact header line.
+
+
+21.4.6 405 Method Not Allowed
+
+  The response MUST include an Allow header field containing a list of
+  valid methods for the indicated address.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent generates a list
+	of valid methods in this response.
+
+
+21.4.8 407 Proxy Authentication Required
+
+  This code is similar to 401 (Unauthorized), but indicates that the
+  client MUST first authenticate itself with the proxy
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent reissues the INVITE
+	request with the proper digest credentials.
+
+
+21.4.13 415 Unsupported Media Type
+
+  The server MUST return a list of acceptable formats using the Accept,
+  Accept-Encoding, or Accept-Language header field, depending on the
+  specific problem with the content.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent returns these
+	headers in responses it generates but does not check
+	for this response type and does not check the list of
+	acceptable formats.
+
+
+21.4.15 420 Bad Extension
+
+  The server MUST include a list of the unsupported extensions in an
+  Unsupported header field in the response.
+
+
+	PARTIAL COMPLY: The Cornfed SIP User Agent returns this
+	header in responses it generates but does not check for this
+	response type and does not check the list of unsupported
+	extensions in the response.  However, since the UA does not
+	generate any extensions, this error should never occur.
+
+
+21.4.16 421 Extension Required
+
+  Responses with this status code MUST contain a Require header field
+  listing the required extensions.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent UAS does not
+	check for this response type and does not return a list
+	of required extensions.  However, since the UA does not
+	generate any extensions, this error should never occur.
+
+
+21.4.23 485 Ambiguous
+
+  It MUST be possible to configure a server to respond with status 404
+  (Not Found) or to suppress the listing of possible choices for ambiguous
+  Request-URIs.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent UAS does not
+	generate this response and treats it like a generic 4xx
+	response.
+
+
+21.5.4 503 Service Unavailable
+
+  If no Retry-After is given, the client MUST act as if it had received a
+  500 (Server Internal Error) response.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent UAS does not
+	check for this response.
+
+
+22 Usage of HTTP Authentication
+
+  Note that due to its weak security, the usage of "Basic" authentication
+  has been deprecated.  Servers MUST NOT accept credentials using the
+  "Basic" authorization scheme, and servers also MUST NOT challenge with
+  "Basic".
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not accept
+	Basic authentication challenges and does not challenge UAS
+	requests using Basic authentication.
+
+
+22.1 Framework
+
+  Under an authentication scheme that uses responses to carry values used
+  to compute nonces (such as Digest), some problems come up for any requests
+  that take no response, including ACK.  For this reason, any credentials in
+  the INVITE that were accepted by a server MUST be accepted by that server
+  for the ACK.  UACs creating an ACK message will duplicate all of the
+  Authorization and Proxy-Authorization header field values that appeared
+  in the INVITE to which the ACK corresponds.  Servers MUST NOT attempt to
+  challenge an ACK.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not include
+	credentials in the ACK.
+	
+
+  A UAC MUST NOT re-attempt requests with the credentials that have just
+  been rejected (though the request may be retried if the nonce was stale).
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not retry a
+	request if it is rejected.
+
+
+22.2 User-to-User Authentication
+
+  The WWW-Authenticate response-header field MUST be included in 401
+  (Unauthorized) response messages.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent uses the WWW-Authenticate
+	header line to get various challenge parameters.
+
+
+  When a UAC resubmits a request with its credentials after receiving a
+  401 (Unauthorized) or 407 (Proxy Authentication Required) response, it
+  MUST increment the CSeq header field value as it would normally when
+  sending an updated request.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent updates the Cseq
+	sequence number as it normally does.
+
+
+22.3 Proxy-to-User Authentication
+
+  If a UA receives a Proxy-Authenticate header field value in a 401/407
+  response to a request with a particular Call-ID, it should incorporate
+  credentials for that realm in all subsequent requests that contain the
+  same Call-ID.  These credentials MUST NOT be cached across dialogs;
+  however, if a UA is configured with the realm of its local outbound proxy,
+  when one exists, then the UA MAY cache credentials for that realm across
+  dialogs.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not cache
+	credentials.
+
+
+  Note that if an authentication scheme that does not support realms is
+  used in the Proxy-Authorization header field, a proxy server MUST attempt
+  to parse all Proxy-Authorization header field values to determine whether
+  one of them has what the proxy server considers to be valid credentials.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent does not handle
+	anything except Digest authentication and this scheme uses
+	realms.
+
+
+  Each WWW-Authenticate and Proxy-Authenticate value received in responses
+  to the forked request MUST be placed into the single response that is sent
+  by the forking proxy to the UA; the ordering of these header field values
+  is not significant.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent forking allows for
+	computation of credentials for each forked leg.
+
+
+22.4 The Digest Authentication Scheme
+
+  The BNF in RFC 2617 has an error in that the 'uri' parameter of the
+  Authorization header field for HTTP Digest authentication is not enclosed
+  in quotation marks.  (The example in Section 3.5 of RFC 2617 is correct.)
+  For SIP, the 'uri' MUST be enclosed in quotation marks.
+
+  RFC 2617 notes that a cnonce value MUST NOT be sent in an Authorization
+  (and by extension Proxy-Authorization) header field if no qop directive
+  has been sent.
+
+    Use of the "qop" parameter is optional in RFC 2617 for the purposes of
+    backwards compatibility with RFC 2069; since RFC 2543 was based on RFC
+    2069, the "qop" parameter must unfortunately remain optional for clients
+    and servers to receive.  However, servers MUST always send a "qop"
+    parameter in WWW-Authenticate and Proxy-Authenticate header field values.
+    If a client receives a "qop" parameter in a challenge header field, it
+    MUST send the "qop" parameter in any resulting authorization header
+    field.
+
+  RFC 2617 [17] defines mechanisms for backwards compatibility using the
+  qop attribute in the request.  These mechanisms MUST be used by a server
+  to determine if the client supports the new mechanisms in RFC 2617 that
+  were not specified in RFC 2069.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent handles Digest
+	Authentication according to RFC 2617.
+
+
+23.1 S/MIME Certificates
+
+  Each user agent that supports S/MIME MUST contain a keyring specifically
+  for end-users' certificates.
+
+23.2 S/MIME Key Exchange
+
+  Whenever the CMS SignedData message is used in S/MIME for SIP, it MUST
+  contain the certificate bearing the public key necessary to verify the
+  signature.
+
+  If the certificate cannot be verified, because it is self-signed, or
+  signed by no known authority, or if it is verifiable but its subject does
+  not correspond to the From header field of request, the UAS MUST notify
+  its user of the status of the certificate (including the subject of the
+  certificate, its signer, and any key fingerprint information) and request
+  explicit permission before proceeding.
+
+  If the certificate cannot be verified because it is self-signed, or
+  signed by no known authority, the UAC MUST notify its user of the status
+  of the certificate (including the subject of the certificate, its signator,
+  and any key fingerprint information) and request explicit permission
+  before proceeding.
+
+  If there is a discrepancy, the UA MUST notify its user of a change of
+  the certificate (preferably in terms that indicate that this is a
+  potential security breach) and acquire the user's permission before
+  continuing to process the signaling.
+
+  If a UA receives an S/MIME body that has been encrypted with a public
+  key unknown to the recipient, it MUST reject the request with a 493
+  (Undecipherable) response.
+
+  Note that a user agent that receives a request containing an S/MIME body
+  that is not optional (with a Content-Disposition header "handling"
+  parameter of "required") MUST reject the request with a 415 Unsupported
+  Media Type response if the MIME type is not understood.  
+
+  Finally, if during the course of a dialog a UA receives a certificate
+  in a CMS SignedData message that does not correspond with the certificates
+  previously exchanged during a dialog, the UA MUST notify its user of the
+  change, preferably in terms that indicate that this is a potential
+  security breach.
+
+23.3 Securing MIME bodies
+
+    o  "multipart/signed" MUST be used only with CMS detached signatures.
+
+    o  S/MIME implementations MUST at a minimum support SHA1 as a digital
+       signature algorithm, and 3DES as an encryption algorithm. 
+
+23.4.1.1 Integrity
+
+  If these header fields are not intact end-to-end, implementations SHOULD
+  NOT consider this a breach of security.  Changes to any other header
+  fields defined in this document constitute an integrity violation; users
+  MUST be notified of a discrepancy.
+
+23.4.1.2 Confidentiality
+
+  If the From header field in an encrypted body differs from the value in
+  the "outer" message, the value within the encrypted body SHOULD be
+  displayed to the user, but MUST NOT be used in the "outer" header fields
+  of any future messages.
+
+  If present, the Date header field MUST always be the same in the "inner"
+  and "outer" headers.
+
+  If a SIP UA encounters an unknown header field with an integrity violation,
+  it MUST ignore the header field.
+
+23.4.2 Tunneling Integrity and Authentication
+
+  Any message bodies that require integrity protection MUST be attached to
+  the "inner" message.
+
+23.4.3 Tunneling Encryption
+
+  The message must first be decrypted, and the "inner" From header field
+  MUST be used as an index.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not implement
+	any form of encryption in the current release.
+
+
+25.1 Basic Rules
+
+  These special characters MUST be in a quoted string to be used within
+  a parameter value.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not perform
+	this check in the current release.
+
+
+  The BNF for telephone-subscriber can be found in RFC 2806 [9].  Note,
+  however, that any characters allowed there that are not allowed in the
+  user part of the SIP URI MUST be escaped.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not perform
+	this check in the current release.
+
+
+26.2.1 Transport and Network Layer Security
+
+  The TLS_RSA_WITH_AES_128_CBC_SHA ciphersuite [6] MUST be supported at a
+  minimum by implementers when TLS is used in a SIP application.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not support
+	TLS.
+
+
+26.3 Implementing Security Mechanisms
+
+26.3.1 Requirements for Implementers of SIP
+
+  All SIP elements that support TLS MUST have a mechanism for validating
+  certificates received during TLS negotiation; this entails possession of
+  one or more root certificates issued by certificate authorities
+  (preferably well-known distributors of site certificates comparable to
+  those that issue root certificates for web browsers).
+
+  All SIP elements that support TLS MUST also support the SIPS URI scheme.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not support
+	TLS.
+
+
+  Proxy servers, redirect servers, registrars, and UAs MUST implement
+  Digest Authorization, encompassing all of the aspects required in 22.
+
+
+	FULLY COMPLY: The Cornfed SIP User Agent supports
+	Digest authentication.
+
+
+26.3.2.1 Registration
+
+  The registrar SHOULD offer a certificate to the UA, and the site
+  identified by the certificate MUST correspond with the domain in which
+  the UA intends to register; for example, if the UA intends to register
+  the address-of-record 'alice@atlanta.com', the site certificate must
+  identify a host within the atlanta.com domain (such as sip.atlanta.com).
+
+  If the certificate is invalid, revoked, or if it does not identify the
+  appropriate party, the UA MUST NOT send the REGISTER message and
+  otherwise proceed with the registration.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does not perform
+	this check in the current release.
+
+
+27.1 Option Tags
+
+    o  Name of the option tag.  The name MAY be of any length, but SHOULD
+       be no more than twenty characters long.  The name MUST consist of
+       alphanum (Section 25) characters only.
+
+
+	DO NOT COMPLY: The Cornfed SIP User Agent does use any
+	option tags in the current release.

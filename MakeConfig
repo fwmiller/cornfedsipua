@@ -1,0 +1,11 @@
+#
+# Enable gdb debugging support
+#
+#DEBUG = -D_DEBUG
+#export DEBUG
+
+#
+# Enable G.729 codec support
+#
+#CODEC_G729 = -D_CODEC_G729
+#export CODEC_G729

@@ -1,0 +1,40 @@
+Cornfed SIP User Agent Installation
+
+To install the Cornfed SIP User Agent, perform the following steps:
+
+1. Unpack the tarball.  This should result in a directory called
+   'cornfedsipua'.  Change into that directory.
+
+2. Make sure the install script file 'install.sh' is executable.  This
+   can be done by executing the following command:
+
+   chmod u+x install.sh
+
+3. You may need to edit the default path in the install.sh script.  Some
+   distributions place the Gnome files in the /opt/gnome.  If this is the
+   case, change the PREFIX variable in install.sh from "/usr" to
+   your default path.
+
+4. As root, execute the install script by typing following command:
+
+   ./install.sh
+
+When this procedure is complete, you should have a menu item for the
+Gnome client in you network group: Applications -> Network (or
+Applications -> Internet).  You can start the Command Line Interface
+(CLI) client by typing the following command in a terminal:
+
+   cornfedsip_cli
+
+To remove an installation, perform the following steps:
+
+1. Change into the 'cornfedsipua' directory.
+
+2. Make sure the uninstall script file 'uninstall.sh' is executable. This
+   can be done by executing the following command:
+
+   chmod u+x uninstall.sh
+
+3. As root, execute the uninstall script by typing following command:
+
+   ./uninstall.sh

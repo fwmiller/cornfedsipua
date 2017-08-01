@@ -1,0 +1,708 @@
+
+Version 1.1.7
+
+* (UA) Changed Contact header address to use registration user to address
+  some Session Border Controllers (SBCs)
+* (UA) Added separate Expires header line to outbound REGISTER messages
+  to address some Session Border Controllers (SBCs)
+* (UA) Fixed bug where compact form of Contact header was not recognized in
+  incoming responses
+* (UA) Fixed bug where compact form of Via headers was not recognized in
+  incoming messages
+* (UA) Fixed bug introduced after 1.1.4 that prevents reset of expiration
+  timer during re-registrations
+* (UA) Fixed bug that prevented soundcard status from returning useful data
+* (UA)(CLI)(GUI) Removed all SUBSCRIBE/NOTIFY implementation code
+* (UA) Added back feature where .wav playback when no call is in progress
+  is played out the speakers
+
+Version 1.1.6
+
+* (UA) Major update to User's Guide to document how to do Expect based
+  scripting
+* (CLI) Changes to register command output to aid scripting with Expect
+* (CLI)(UA) Updated client to backend interface to pass desired registration
+  interval
+* (UA) Fixed bug where STUN server domain name was lost if a corresponding
+  IP address was not found
+* (CLI)(UA) Changes to CLI client to aid scripting with tools like Expect
+
+Version 1.1.5
+
+* (UA) Fixed bug where RTP UDP port was occasionally set to SIP UDP port
+  in advertised SDP
+* (CLI) Continue implementation of new CLI help system using XML based help
+  information
+* (CLI)(UA) Debugging of SUBSCRIBE/NOTIFY for the CLI client
+* (UA) Reworked NAT traversal to send STUN requests out SIP and RTP
+  periodically (every 10 seconds)
+
+Version 1.1.4
+
+* (CLI) Changed readline functionality to used raw input rather than 
+  cooked mode
+* (GUI) Fixed bugs with display of status messages that caused client to
+  hang
+* (CLI) Disabled removal of registration on client exit
+
+Version 1.1.3
+
+* (GUI) Initial release of simple GTK based graphical client
+* (UA) Added support for rport
+
+Version 1.1.2
+
+* (CLI) Begin implementation of new CLI help system using XML based help
+  files
+* (CLI) Removed ability to turn DNS off and on from CLI
+* (CLI) Added -dns command line argument
+* (UA) Reworked DNS lookups
+* (UA) Reworked NAT traversal to send STUN requests out SIP and RTP
+  ports on demand
+* (UA) Reworked struct sip_user_agent data structure to use struct
+  ipendpoint data structures
+* (UA) Fixed a bug where re-registration responses were being received
+  prior to dialog state being changes causing re-registrations to fail
+* (UA) Added building and linking of the Expat XML parser conditionally
+  to the codebase
+* (UA) Rewrote portions of the soundcard driver to improve performance
+  on resource-constrained systems
+
+Version 1.1.1
+
+* (GUI) Dropped support for Gnome GUI client
+
+Version 1.1.0
+
+* (UA) Fixed bug where transport parameter of Via header lines was not
+  being reflected properly in UAS responses
+* (UA) Changed soundcard driver to continuously read mic samples even
+  when no call is connected
+* (UA) Removed RTP stream locking since no mutual exclusion is necessary
+* (UA)(CLI) Removed all code to handle setting volume on soundcard
+* (UA)(CLI) Added wav flush command to allow clearing of .wav playback
+  queue
+* (UA) Added numerous checks in backend to prevent DNS lookups when they
+  are turned off
+* (CLI) Added dns command to turn DNS lookups on and off
+* (UA) Added command line argument and config file support for turning
+  off DNS lookups
+* (UA) Replaced strstr() calls with strcasestr() when parsing header
+  parameters
+* (UA) Removed some strategically placed usleep() calls
+* (UA) Fixed bug in calculation of how much output buffer space is
+  available on the soundcard
+* (UA) Fixed bug in the way the duration of the main polling loop was
+  calculated
+* (UA) Converted heap allocation of dialogs to stack based preallocation
+* (UA)(CLI)(GUI) Added passing of RTT estimates from client to backend
+  when starting transactions
+* (UA)(CLI)(GUI) Added callbacks and tracking of RTT estimates by clients
+* (UA) Rewrote timer code to use specified Round Trip Time estimates
+  rather than a fixed number of retransmissions
+
+
+Version 1.0.0
+
+* (UA) Fixed bug where multiple comma-separated URIs on a Contact header
+  line were not handled correctly in a UAC registration response
+* (GUI) Fixed bug where changes to a Service Provider info other than the
+  host were not allowed
+
+
+Version 0.9.13
+
+* (UA) Added lookup of domain names in hosts file after network DNS
+  lookups have been disabled
+* (UA)(CLI)(GUI) Fixed bug where an incoming INVITE request with a request
+  URI other than the local host or a Provider domain or host was not
+  rejected with a 404 Not Found
+* (UA) Added disabling of DNS lookups after the first lookup fails
+* (UA)(CLI)(GUI) Fixed bug where local endpoint IP address was not set
+  to 127.0.0.1 if network interface is not available
+* (UA)(CLI)(GUI) Eliminated local_user fields from all data structures and
+  functions
+* (GUI) Relaxed restrictions on user fields in Contact entries
+
+Version 0.9.12
+
+* (CLI)(GUI) Updated graphics to use new icons
+* (UA) Fixed bug with interpreting RTP payload sizes that caused G.729
+  codec to fail
+* (GUI) Removed some calls to gdk_threads_enter() and gdk_threads_leave()
+  that were causing the client to hang
+* (GUI) Removed calls to gtk_alignment_set_padding() which caused client
+  to crash under RHEL when the Settings button was pressed
+* (GUI) Fixed bug where a 481 Call Leg/Transaction Does Not Exist response
+  was not sent when a CANCEL for a non-existent call was received
+* (GUI) Fixed bug where status bar was not reset when an outbound call
+  was refused
+
+Version 0.9.11
+
+* (GUI) Fixed bug where status bar was not reset when the Hangup button
+  was pressed for an outbound call that had not been answered
+* (GUI) Fixed bug where status bar was not reset when the Clear button
+  was pressed during an outbound call that had not been answered
+* (UA) Added check for Supported extensions
+* (GUI) Fixed bug when editing Service Provider data that crashed the
+  client
+
+Version 0.9.10
+
+* (GUI) Fixed bug associated with multiple instances of a single Service
+  Provider host existing in the contacts list
+* (UA) Added use of backup files when main file is corrupted or missing
+* (UA) Added backing up of various files when client writes new version
+  to disk
+
+Version 0.9.9
+
+* (GUI) Removed A,B,C,D DTMF buttons from dialpad
+* (UA)(CLI)(GUI) Separated setting of ringtone file and device functions
+* (GUI) Added remembering of client window size between runs
+* (GUI) Added icon to main window title bar
+* (UA) Added short usleep() to soundcard and ringtone write routine
+  busy waits on their respective output buffers to reduce overall CPU usage
+
+Version 0.9.8
+
+* (UA) Enclosed passwords in quotes in Contacts file to allow use of
+  commas in passwords
+* (UA) Changed permissions for all config files to user read/write only
+* (GUI) Added ringtone device selection to Settings popup window
+* (CLI) Added ringtone device selection to ringtone command
+* (UA) Added support for a ringtone soundcard separate from the media
+  soundcard
+* (UA)(CLI)(GUI) Added ability to clear call history
+
+Version 0.9.7
+
+* (GUI) Fixed bug where all outstanding registrations were not being
+  unregistered when the client exited
+* (UA)(CLI)(GUI) Added soundcard selection for media during client execution
+* (GUI) Modifications to GUI design to address Gnome HIG 2.0
+* (GUI) Removed volume control widget
+* (UA)(CLI)(GUI) Removed handling of OSS mixer device
+* (UA) Add check whether saved soundcard exists when starting up and fall
+  back to a default device if it does not
+* (UA)(CLI)(GUI) Fixed bug where re-registrations for multiple providers
+  conflicted with alternate user settings
+
+Version 0.9.6
+
+* (UA)(GUI) Added ability to specify an alternate user name for
+  authentication of registrations and call setups
+* (UA) Fixed bug where received call attempt was not recorded in call
+  history
+* (GUI) Simplified status bar messages
+* (GUI) Removed connection state widget from status bar
+* (UA) Fixed bug where registration expiration value was not cleared when
+  a registration attempt failed
+* (UA) Changed default registration interval to 10 minutes
+* (CLI) Fixed bug where history_update() callback was not implemented in
+  the CLI client causing it to segfault
+* (UA) Changed all select() calls to non-blocking
+* (UA)(CLI)(GUI) Code restructuring in support of generating SDK
+  documentation
+* (UA) Added injection of comfort noise samples to soundcard output when
+  a comfort noise RTP packet is received
+* (UA) Added check for payload type to incoming RTP packet processing
+
+Version 0.9.5
+
+* (GUI) Fixed bug where status bar was not updated when various timeouts
+  occurred
+* (CLI) Added history command to display call history
+* (GUI) Added call history tab with text view of call history where text
+  view updates automatically when a history event occurs
+* (UA) Added call history management
+* (UA) Added check for prefix to sip_uri_isset() function
+* (UA)(CLI)(GUI) Removed all references to NAT type
+* (UA) Updated STUN client to follow new version of STUN specification
+  draft-ietf-behave-rfc3489bis
+* (UA) Fixed bug where call to dns_gethostbyname() (new function in 0.9.4
+  release) caused an infinite loop if domain could not be resolved
+
+Version 0.9.4
+
+* (GUI) Added ability to directly provide feedback to Cornfed Systems on
+  the About tab
+* (GUI) Added ability to specify STUN server in Settings popup window
+* (UA)(CLI)(GUI) Added DNS resolver routine and replaced all calls to
+  gethostbyname()
+* (CLI) Added ability to specify STUN server to nat command
+* (UA) Added support for specifying STUN server in config files
+
+Version 0.9.3
+
+* (UA)(GUI) Code cleanup
+* (UA) Fixed bug where STUN client was attempting to receive responses
+  twice for some tests
+* (UA) Fixed bug where registration dialog was not being cleared when
+  a registration attempt timed out
+* (GUI) Fixed bug where Service Provider menu was using an Unregister
+  label after a registration attempt had timed out
+* (UA) Changed STUN socket to non-blocking
+* (UA) Fixed bug where setting volume to a value of 100 caused volume
+  to be set to zero
+* (UA) Cleanup Via header handling
+* (UA) Replaced dynamic memory allocation for Via header processing with
+  a statically allocated stack of Via header templates
+
+Version 0.9.2
+
+* (UA)(GUI)(CLI) Added STUN support for NAT traversal
+
+Version 0.9.1
+
+* (UA) Package release as RPM
+* (GUI) Added several new settings
+* (GUI) Added Settings popup window
+* (GUI) Removed Settings tab from Notebook
+* (UA) Fixed bug where authentication with no password set caused INVITE
+  and registration attempts to loop forever
+* (UA) Removed retry of authentication with local user after trying an
+  authentication with the registered user fails
+
+Version 0.9.0
+
+* (GUI) Fixed bug with DNS lookups during read of contacts file during
+  startup
+* (GUI) Discontinued support for simple Gnome client
+* (GUI) Added button to allow setting ringtone .wav file
+* (CLI) Added command to allow setting ringtone .wav file
+* (UA) Added command line argument to allow setting ringtone .wav file
+* (UA) Added audible ring tone for incoming calls
+* (CLI) Added command to display current contents of .wav file playback
+  queue
+
+Version 0.8.4
+
+* (UA) Added G.729a codec for commercial use
+* (UA) Reworked threading and timing of outbound RTP stream
+* (UA) Fixed bug in RTP transmissions that sent an incorrect timestamp value
+* (UA)(CLI)(GUI) Fixed bug that caused large jitter for the outbound RTP
+  stream
+* (UA) Fixed bug where a .wav file was not being played into the outbound
+  RTP stream if no soundcard is attached
+* (UA) Fixed bug where a failed authentication of an INVITE resulted in
+  an infinite loop of resending the INVITE and receiving a 401 response
+* (UA) Fixed bug where byte ordering change was applied incorrectly to
+  IP addresses that had been converted using inet_aton()
+
+Version 0.8.3
+
+* (UA) Added sending of 488 Not Acceptable Here if no acceptable codec
+  was agreed to for an incoming INVITE
+* (UA) Added check to 4xx response for registration of unknown user for
+  whether an XXX_Authenticate header line is present
+* (GUI) Fixed bug where hosts specified as domain name for Contacts read
+  from contacts file were ignored
+* (UA) Fixed bug where a response with no Via headers was not dropped
+* (GUI) Fixed bug where text in Answer and Refuse buttons was not reset to
+  Dial and Hangup when Clear button is pressed
+* (GUI) Reworked Service Provider and Contact dialogs to handle domain
+  names correctly
+* (UA) Reworked Via header handling to deal with domain names in addition
+  to IP addresses
+* (UA) Changed parsing of URIs to preserve a domain name even if it does
+  not resolve to an IP address
+* (UA) Fixed bug where parsing of URIs in To and From headers for incoming
+  INVITEs that did not use angle brackets was not handled correctly
+* (UA) Fixed bug where owner in o= like of sdp was not set when an incoming
+  INVITE uses no user field in the To header URI
+* (UA) Fixed bug where check for Content-Type value was not case-insensitive
+* (UA) Fixed bug where Via branch parameter was truncated if it contained
+  a space
+* (GUI) Fixed bug where text in Answer and Refuse buttons was not reset to
+  Dial and Hangup when an incoming call was cancelled
+* (UA) Changed DTMF packet generation so the last three packets send have
+  the end marker bit set
+* (UA) Fixed bug in generation of duration field in DTMF packets where
+  value needed to be converted to network order
+* (GUI) Fixed bug where local user field was not being picked up when a
+  peer contact was edited
+
+Version 0.8.2
+
+* (UA) Fixed bug with spelling of outbound_proxy_* in config file generation
+* (UA) Modified authentication to use stored parameters if a failed
+  authentication response does not contain an authentication header line
+* (UA)(GUI) Modified authentication procedure to use either register user
+  or local user automatically
+* (GUI) Fixed bug where local URI prefix type was not set when no config
+  file is specified
+* (GUI) Enabled registration removal from Service Provider context menu
+* (GUI) Enabled clear button in advanced Gnome client
+
+Version 0.8.1
+
+* (UA)(CLI) Replaced .wav playout code with a new implementation
+* (UA) Fixed bug where 491 Request Pending was being returned for matching
+  UAS INVITEs rather than the last transmitted response
+* (UA) Increased select() delays in sip main thread processing
+* (CLI) Fixed bug where URI prefixes were not set with no config file
+* (UA) Changed check for existence of a soundcard from a string comparison
+  to a integer value check
+* (UA)(CLI)(GUI) Code cleanup
+
+Version 0.8.0
+
+* (GUI) First release of the Advanced Gnome client
+* (UA)(CLI)(GUI) Fixed bug where removing registration password would
+  not clear expires timer when a re-registration attempt occured
+* (UA) Fixed bug dial with no password set when authentication was
+  requested resulted in an infinite loop of resending the INVITE
+
+Version 0.5.5
+
+* (UA)(GUI) Added status message when a registration is completed
+* (UA)(CLI)(GUI) Added addtional parameters to config file
+* (UA)(CLI)(GUI) Rewrote config file, command line arguments, and
+  initialization to allow command line arguments to override the config file
+* (UA) Fixed bug register send with no password set when authentication was
+  requested resulted in an infinite loop of resending the registration
+
+Version 0.5.4
+
+* (CLI)(GUI) Client automatically removes an active registration on exit
+* (CLI) Added setting to allow a single registration with no
+  subsequent re-registrations
+* (CLI) Added ability to set the registration interval and buffer
+  before re-regstrations are sent
+
+Version 0.5.3
+
+* (CLI)(GUI) Added -noconfig option to allow bypassing use of config file
+* (UA) Fixed bug with error reporting on soundcard initialization
+
+Version 0.5.2
+
+* (UA) Fixed bug with Via header generation that caused a segmentation
+  fault when no branch parameter was available
+* (UA)(CLI)(GUI) Allow registrations to occur when calls are in progress
+* (UA) Fixed memory leak with Via header management for anomalous
+  UAS responses
+
+Version 0.5.1
+
+* (UA)(CLI)(GUI) Added automatic re-registration when a previous
+  registration is about to expire
+* (UA) Fixed bug where wrong expires value was picked up when multiple
+  Contact headers are returned in a 200 OK response to a REGISTER
+* (UA) Fixed bug with sound card input handling that caused CPU to peg at
+  100%
+* (UA) Fixed dialog matching bug for incoming INVITEs during call setup
+* (UA) Fixed Via header processing for incoming requests
+* (UA) Added ability to compute authentication using either local or
+  register URIs and automatic trying of both
+* (GUI) Fixed bug where local user was not picked up for registration
+  after startup but before a call is placed
+
+Version 0.5.0
+
+* (CLI)(GUI) Changed clients from no registrations while a call is in
+  progress to when no transactions are in progress
+* (UA) Fixed bug where Via header URI port number was being picked from
+  a dialog incorrectly rather than from the local URI
+* (UA)(CLI)(GUI) Code cleanup
+* (UA)(CLI)(GUI) Added config file support
+* (UA)(CLI) Added ability to remove registration from registrar
+* (UA)(CLI) Added volume control to soundcard driver, cli, and Gnome
+  graphical interfaces
+
+Version 0.4.13
+
+* (UA) Added ability to play and record .wav files using G.711 a-law
+  codec if selected
+* (UA) Added support for codec selection using SDP offer/answer
+* (UA) Added G.711 a-law codec
+
+Version 0.4.12
+
+* (UA) Converted timestamp in outgoing RTP packets from simple sequence
+  values to a derivation of the system clock
+* (UA) Converted jitter calculation to use received timestamps of incoming
+  RTP packets rather than interarrival time measurements
+* (UA) Fixed bug where Via header line contents inserted into UAC requests
+  were not recorded resulting in mismatches with Via header line contents
+  of received UAC responses
+* (UA)(CLI) Added the ability to record the inbound RTP stream into
+  an 8 KHz sampled .wav file when a call is connected
+* (UA) Changed two state variables for ringing and local NAT in the
+  struct sip_user_agent to bits in a flags field
+* (CLI) Changed usleep() delay to a fixed time delay using gettimeofday()
+  for .wav playback into the RTP stream
+* (UA) Removed check for a match between the port in a Request URI to
+  the local port number in incoming requests
+
+Version 0.4.11
+
+* (UA)(CLI) Added the ability to play an 8 KHz sampled .wav file out
+  the computer speakers when no call is in progress
+* (UA)(CLI) Added the ability to play an 8 KHz sampled .wav file into
+  the outbound RTP stream
+* (UA) Fixed a bug with the outbound RTP stream that incorrectly allowed
+  multiple threads to access a locked stream
+* (UA) Added buffering for soundcard output
+* (GUI) Updates to how GDK threading are handled to avoid hanging the GUI
+
+Version 0.4.10
+
+* (GUI) User interface changes
+* (UA) Changed assignment of dialog remote and local URIs to make use of
+  domain names if available
+* (UA) Changed URI generation to use a domain name if available rather
+  than always using a host IP address
+* (UA) Changed generation of From URI in requests and To URI in responses
+  to use register URI fields rather than local URI fields if a registrar
+  is specified
+* (UA) Fixed bug where password field of a generated URI was placed after
+  the @ character
+* (CLI) Fixed bug where setting a new SIP or RTP port would cause a
+  segmentation fault
+
+Version 0.4.9
+
+* (UA) Fixed bug where an REGISTER requiring authentication was not
+  increasing CSeq for subsequent REGISTER
+* (UA) Fixed bug where an INVITE requiring authentication was not ACKing
+  the original INVITE and increasing the CSeq number for the subsequent
+  INVITE
+* (UA)(CLI)(GUI) Added command line argument to all the specification of
+  the local IP address to be used by the client
+* (UA) Replaced polling loop with use of select() calls on various
+  file descriptors.  This change appears to help with quality of
+  sound playback.
+* (UA)(CLI) Added ability to filter logging based on level (see log
+  command in cli for details)
+* (CLI) Added customer-specific RTP statistics output formatting
+* (UA)(CLI)(GUI) Added customer-specific compile time constants
+* (UA)(CLI) Added additional RTP statistics tracking to the cli
+
+Version 0.4.8
+
+* (UA)(CLI) Added a set of RTP statistics tracking to the cli
+* (UA) Changed detection of a missing Max-Forwards header line in request
+  from a fatal error to a warning
+
+Version 0.4.7
+
+* (UA) Added check in a secondary incoming INVITE for a CSeq less than
+  that of the first INVITE and if so return a 500 Internal Server Error
+* (UA) Added checks for mandatory headers for each request type
+* (UA) Added check for sent-by parameter in Via header lines of responses
+* (UA) Added copying of credentials into outgoing UAC BYE requests
+* (UA) Added 491 Request Pending responses when retransmitted INVITEs are
+  received
+
+Version 0.4.6
+
+* (UA)(CLI) Added Do Not Disturb function to cli
+* (UA) Added 486 Busy Here responses in appropriate places
+* (UA) Fixed bug where a response with a value >= 400 did not clear a
+  session dialog in a non-INVITE client transaction
+* (UA) Fixed bug where dialog state was not reset to SIPS_UAC_CALLING
+  and the remote tag was not cleared when an authenticated INVITE was sent
+  after receiving a challenge
+
+Version 0.4.5
+
+* (UA) Fixed critical bug that cleared all dialogs by mistake when a call
+  was disconnected resulting in a segmentation fault
+
+Version 0.4.4
+
+* (UA) Fixed bug where client was not updating remote target when multiple
+  provisional responses were received
+* (UA) Fixed bug where client would crash when a call was connected
+  using /dev/null as the soundcard device
+* (UA) Added command line option for both clients to allow specifying
+  a port other than the default for RTP media streams
+* (UA) Added command line option for both clients to allow specifying
+  a port other than the default for SIP messaging
+* (UA) Added support for forking of outbound UAC INVITEs by upstream
+  proxies
+
+Version 0.4.3
+
+* (GUI) Fixed bug where Dial button text was not reset when a non-2xx
+  final response is received during an INVITE transaction
+* (GUI) Fixed bug where not all internal URIs were updated from GUI elements
+  when a UAC registration or UAC INVITE is initiated
+* (UA) Added Digest authentication with INVITEs
+
+Version 0.4.2
+
+* (UA) Added support for UAS OPTIONS requests
+* (UA) Added check for Require header to several incoming UAS requests
+* (UA) Collapsed two threads down to one to lower runtime memory footprint
+* (UA) Converted static sip_dialog structure to a pointer to dynamically
+  allocated structure
+
+Version 0.4.1
+
+* (UA) Collapsed four threads down to one to lower runtime memory
+  footprint
+* (GUI) Fixed bug where client retrying INVITEs in Calling State could
+  not hangup immediately
+* (UA) Added sending of a 415 Unsupported Media Type response with an
+  Accept header if media type check fails
+* (UA) Added check for the reception of a provisional response before
+  sending a UAC CANCEL
+* (UA) Fixed bug where generated REGISTER message with no body did not
+  include a blank line after the message headers
+
+Version 0.4.0
+
+* (UA)(CLI)(GUI) Major code restructuring to remove all global variables
+  from backend library code
+
+Version 0.3.5
+
+* (GUI) Fixed bug where Dial button label was not set back to Dial when
+  an INVITE retry timer expired
+* (UA) Added UAC CANCEL retry timer
+* (UA) Fixed bug where bogus visible IP address was recorded when
+  www.myipaddress.com server is not available
+* (GUI) Fixed bug with status messages and UAC register completion
+* (UA)(CLI)(GUI) Fixed bug where various elements were not cleaned up
+  correctly for incoming UAS CANCELs
+* (GUI) Fixed bug with status messages and a UAC CANCEL
+* (UA) Fixed bug where INVITE retry timer was not stopped when UAC
+  hangs up before the other side answers
+* (UA) Get expires value from Contact header for registration responses
+
+Version 0.3.4
+
+* (GUI) Added register tab to Gnome client
+
+Version 0.3.3
+
+* (CLI)(GUI) Added command line argument to allow specification of
+  soundcard device
+* (UA) Removed sending of 405 Method Not Allowed message text to
+  web server
+
+Version 0.3.2
+
+* (UA) Added support for Record-Route and Route header fields
+
+Version 0.3.1
+
+* (CLI) Added support for outbound proxy routing
+* (UA) Added sending 405 Method Not Allowed response after receiving
+  unsupported request methods
+* (CLI) Removed erroneous reference to -lasound in cli build
+* (GUI) Removed resize grips on Status Bar panels in Gnome client
+* (UA) Added retransmission of ACK on-demand when a 200 OK is received
+  for a connected call
+
+Version 0.3.0
+
+* Initial release of Gnome Graphical User Interface (GUI) client
+* Converted documentation from LaTeX to OpenOffice
+
+Version 0.2.6
+
+* Changed default remote URI to sip:613@fwd.pulver.com (Echo test)
+* Added ability to specify a string of DTMF digits at the command line
+* Port to Fedora Core 1 (minor compile-time fixes)
+* Adjustments to remote monitoring
+
+Version 0.2.5
+
+* Bugfixes
+* Adjustments to remote monitoring
+* Fixed documentation bugs
+
+Version 0.2.4
+
+* Added web-based monitoring of error and warning conditions
+* Added sanity checks on soundcard initialization
+
+Version 0.2.3
+
+* Added simple UAC CANCEL processing
+* Added simple UAS CANCEL processing
+* Fixed bug when generating a SIP URI with no user part
+* Added cleanup of remote RTP endpoint after a session disconnect
+
+Version 0.2.2
+
+* Code cleanup
+* Added support for compact header forms in incoming SIP messages
+* Increased duration in RFC 2833 DTMF digit packets
+* Fixed documentation bugs
+
+Version 0.2.1
+
+* Added command line option to specify network interface device at startup
+* Fixed documentation bugs
+* Client exits if /dev/dsp cannot be opened
+* Added register send command online documentation
+
+Version 0.2.0
+
+* Fixed bug in comparison of request URI for incoming UAS ACK requests
+* Change default RTP port to 5004
+* Added Digest authentication with registrations
+* Replaced in-band with RFC 2833 based DTMF digit generation
+* Added basic SIP registration
+
+Version 0.1.7
+
+* Added retry timer for outgoing UAC BYEs
+* Integrated "remote domain" cli command function with "remote host"
+  command and removed "remote domain" command
+* Allow visible IP address to be used as host portion of Request URI in
+  incoming requests
+* Fixed bug in SIP URI parsing that parsed URIs with no userinfo part
+  incorrectly
+
+Version 0.1.6
+
+* Fixed bug where local and remote URIs did not have their SIP prefix
+  type initialized
+* Changes to organize output during call progress
+* Added usleep() to RTP thread to reduce CPU utilization
+
+Version 0.1.5
+
+* Allow dynamic changes to local RTP port number
+* Added ability to set remote host using a domain name
+* Added ability to parse URIs using domain names instead of IP
+  addresses
+* Added UAS re-INVITE, ACK, and BYE request message validity checks
+
+Version 0.1.4
+
+* Added in-band DTMF digit generation
+
+Version 0.1.3
+
+* Turned debugging off by default
+* Added UAS INVITE request message validity checks
+* Added logging facility and converted lots of debug output to logging
+* Added UAC response message validity checks
+* Added high-water mark to soundcard input buffer
+* Fixed bug where UAC INVITE retry timer was not being stopped when
+  certain responses were received
+
+Version 0.1.2
+
+* Added nat command to determine local endpoint NAT translations
+* Allow dynamic changes to SIP local endpoint port number
+* Changes to local URI host IP address determination to support working
+  with routed LANs
+* Soundcard driver changes to fix dead mic bug
+
+Version 0.1.1
+
+* Added usleep() to spinning threads to reduce CPU utilization
+* Binary executable is shipped without symbols
+* Allow dynamic changes to SIP local endpoint user name
+
+Version 0.1.0
+
